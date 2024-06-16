@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "*.anm": "lua",
+        "*.obj": "lua",
+        "*.scn": "lua",
+        "*.cam": "lua",
+        "*.tra": "lua",
+        "*.lua.in": "lua",
+        "*.anm.in": "lua",
+        "*.obj.in": "lua",
+        "*.scn.in": "lua",
+        "*.cam.in": "lua",
+        "*.tra.in": "lua",
+    },
+    "[lua]": {
+        "files.encoding": "shiftjis"
+    },
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.workspace.library": [
+        "vendor/lua_aviutl_definitions/aviutl.lua"
+    ]
+}

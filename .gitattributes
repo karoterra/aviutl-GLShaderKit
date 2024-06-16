@@ -1,0 +1,14 @@
+* text=auto
+
+*.lua text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.obj text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.anm text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.scn text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.cam text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.tra text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.lua.in text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.obj.in text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.anm.in text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.scn.in text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.cam.in text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.tra.in text eol=crlf working-tree-encoding=cp932 linguist-language=Lua

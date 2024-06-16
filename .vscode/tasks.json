@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "CMake: Config",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "default"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "CMakeを構成"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Build (Debug)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--preset",
+                "debug"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "デバッグビルド"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Build (Release)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--preset",
+                "release"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "リリースビルド"
+        },
+    ]
+}

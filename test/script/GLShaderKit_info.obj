@@ -1,0 +1,6 @@
+--[[
+    モジュールから取得できる情報をテキストとして表示
+]]
+local GLShaderKit = require "GLShaderKit"
+local text = "<s60>DLL version: " .. GLShaderKit.version() .. "<s>"
+obj.load("text", text)

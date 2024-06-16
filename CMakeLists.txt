@@ -14,6 +14,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(LUA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/vendor/lua/include)
 set(LUA_LIBRARY_DIR ${PROJECT_SOURCE_DIR}/vendor/lua)
 
+# glad
+set(GLAD_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/vendor/glad/include)
+set(GLAD_SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/glad/src)
+
 # デバッグに使用するAviUtlがあるディレクトリ
 set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 
@@ -21,10 +25,13 @@ set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 add_library(GLShaderKit SHARED
     src/main.cpp
     src/log.hpp
+    ${GLAD_SOURCE_DIR}/gl.c
+    ${GLAD_SOURCE_DIR}/wgl.c
 )
 target_include_directories(GLShaderKit
     PRIVATE
         ${LUA_INCLUDE_DIR}
+        ${GLAD_INCLUDE_DIR}
 )
 target_link_directories(GLShaderKit PRIVATE ${LUA_LIBRARY_DIR})
 target_link_libraries(GLShaderKit

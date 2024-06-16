@@ -1,5 +1,7 @@
 #include <lua.hpp>
 
+#include "log.hpp"
+
 #define GL_SHADER_KIT_API extern "C" __declspec(dllexport)
 
 #ifndef GL_SHADER_KIT_VERSION

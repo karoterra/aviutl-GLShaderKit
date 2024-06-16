@@ -20,6 +20,7 @@ set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 # GLShaderKit.dll
 add_library(GLShaderKit SHARED
     src/main.cpp
+    src/log.hpp
 )
 target_include_directories(GLShaderKit
     PRIVATE

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(aviutl_GLShaderKit
-    LANGUAGES CXX
+    LANGUAGES CXX C
     VERSION 0.0.0
 )
 
@@ -25,6 +25,8 @@ set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 add_library(GLShaderKit SHARED
     src/main.cpp
     src/log.hpp
+    src/gl_context.hpp
+    src/gl_context.cpp
     ${GLAD_SOURCE_DIR}/gl.c
     ${GLAD_SOURCE_DIR}/wgl.c
 )
@@ -37,6 +39,7 @@ target_link_directories(GLShaderKit PRIVATE ${LUA_LIBRARY_DIR})
 target_link_libraries(GLShaderKit
     PRIVATE
         lua51
+        opengl32
 )
 target_compile_options(GLShaderKit
     PRIVATE

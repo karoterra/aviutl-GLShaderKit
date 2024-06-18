@@ -2,5 +2,22 @@
     モジュールから取得できる情報をテキストとして表示
 ]]
 local GLShaderKit = require "GLShaderKit"
-local text = "<s60>DLL version: " .. GLShaderKit.version() .. "<s>"
+
+GLShaderKit.activate()
+local version = GLShaderKit.version()
+local isInit = GLShaderKit.isInitialized() and "はい" or "いいえ"
+local glVendor = GLShaderKit.glVendor()
+local glRenderer = GLShaderKit.glRenderer()
+local glVersion = GLShaderKit.glVersion()
+local glslVersion = GLShaderKit.glslVersion()
+GLShaderKit.deactivate()
+
+local text = "<s40>" ..
+    "GLShaderKit version: " .. version .. "\n" ..
+    "初期化済み: " .. isInit .. "\n" ..
+    "GL_VENDOR: " .. glVendor .. "\n" ..
+    "GL_RENDERER: " .. glRenderer .. "\n" ..
+    "GL_VERSION: " .. glVersion .. "\n" ..
+    "GL_SHADING_LANGUAGE_VERSION: " .. glslVersion .. "\n" ..
+    "<s>"
 obj.load("text", text)

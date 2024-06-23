@@ -11,7 +11,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     return DefWindowProcA(hwnd, msg, wp, lp);
 }
 
-void GLContext::Initialize() {
+void GLContext::Initialize(const Config& config) {
     if (initialized_) {
         return;
     }
@@ -108,6 +108,7 @@ void GLContext::Initialize() {
 
     fbo_.reset(new GLFramebuffer(100, 100));
     vertex_.reset(new GLVertex(1));
+    shaderManager_.SetCapacity(config.shaderCacheCapacity);
 
     wglMakeCurrent(NULL, NULL);
 

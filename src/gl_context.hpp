@@ -14,6 +14,7 @@
 #include "gl_shader.hpp"
 #include "gl_shader_manager.hpp"
 #include "gl_texture.hpp"
+#include "config.hpp"
 #include "log.hpp"
 
 namespace glshaderkit {
@@ -28,7 +29,7 @@ public:
     }
 
     // 初期化処理
-    void Initialize();
+    void Initialize(const Config& config);
 
     // 開放処理
     void Release();

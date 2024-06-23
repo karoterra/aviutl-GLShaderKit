@@ -1,8 +1,11 @@
 #include <Windows.h>
 
+#include <filesystem>
+
 #include <lua.hpp>
 
 #include "gl_context.hpp"
+#include "config.hpp"
 #include "log.hpp"
 
 #define GL_SHADER_KIT_API extern "C" __declspec(dllexport)
@@ -10,6 +13,8 @@
 #ifndef GL_SHADER_KIT_VERSION
 #   define GL_SHADER_KIT_VERSION "0.0.0"
 #endif
+
+HINSTANCE g_hinst = nullptr;
 
 int version(lua_State* L) {
     lua_pushstring(L, GL_SHADER_KIT_VERSION);
@@ -168,7 +173,18 @@ static const luaL_Reg kLibFunctions[] = {
 GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
     auto& context = glshaderkit::GLContext::Instance();
     try {
-        context.Initialize();
+        glshaderkit::Config config;
+        // 設定ファイルが見つかれば読み込む
+        char dllPath[MAX_PATH];
+        if (GetModuleFileNameA(g_hinst, dllPath, MAX_PATH)) {
+            std::filesystem::path configPath(dllPath);
+            configPath.replace_extension(".ini");
+            if (std::filesystem::exists(configPath)) {
+                config.Load(configPath.string().c_str());
+            }
+        }
+
+        context.Initialize(config);
         if (!context.IsInitialized()) {
             glshaderkit::Log::Error("初期化に失敗しました");
             context.Release();
@@ -188,6 +204,7 @@ GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
 BOOL APIENTRY DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
     switch (reason) {
     case DLL_PROCESS_ATTACH:
+        g_hinst = hinst;
         break;
     case DLL_PROCESS_DETACH:
         glshaderkit::GLContext::Instance().Release();

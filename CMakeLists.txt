@@ -25,6 +25,7 @@ set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 add_library(GLShaderKit SHARED
     src/main.cpp
     src/log.hpp
+    src/config.hpp
     src/gl_context.hpp
     src/gl_context.cpp
     src/gl_shader.hpp
@@ -58,6 +59,7 @@ target_compile_options(GLShaderKit
 target_compile_definitions(GLShaderKit
     PRIVATE
         GL_SHADER_KIT_VERSION="${PROJECT_VERSION}"
+        NOMINMAX
 )
 
 # 検証用の AviUtl に配置
@@ -65,6 +67,7 @@ add_custom_target(debug_deploy ALL
     ${CMAKE_COMMAND} -E make_directory ${AVIUTL_DIR}/script/GLShaderKit
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:GLShaderKit>
+        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_info.obj
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_draw.obj
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_effect.anm

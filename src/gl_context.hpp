@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <stack>
 
 #include <Windows.h>
 
@@ -11,6 +12,7 @@
 #include "gl_framebuffer.hpp"
 #include "gl_vertex.hpp"
 #include "gl_shader.hpp"
+#include "gl_texture.hpp"
 #include "log.hpp"
 
 namespace glshaderkit {
@@ -62,6 +64,8 @@ public:
     void SetIVec3(const char* name, int v0, int v1, int v2);
     void SetIVec4(const char* name, int v0, int v1, int v2, int v3);
 
+    void SetTexture2D(int unit, const void* data, int width, int height);
+
     // GLの情報を取得
     const char* GetString(GLenum name) {
         if (!initialized_) {
@@ -90,6 +94,8 @@ private:
     // ムーブ代入
     GLContext& operator=(GLContext&&) = delete;
 
+    void ReleaseTextures();
+
     // 初期化済みならtrue
     bool initialized_;
 
@@ -101,6 +107,7 @@ private:
     std::unique_ptr<GLVertex> vertex_;
     std::unique_ptr<GLShader> shader_;
     std::string currentShader_;
+    std::stack<GLTexture> textures_;
 };
 
 } // namespace glshaderkit

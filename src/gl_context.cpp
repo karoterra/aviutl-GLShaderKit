@@ -121,6 +121,7 @@ void GLContext::Release() {
     fbo_.reset();
     shader_.reset();
     vertex_.reset();
+    ReleaseTextures();
 
     Deactivate();
 
@@ -174,6 +175,8 @@ void GLContext::Draw(void* data, int width, int height) {
     glDrawElements(GL_TRIANGLES, vertex_->IndexCount(), GL_UNSIGNED_INT, nullptr);
     glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
+    GLTexture::Unbind();
+    ReleaseTextures();
     GLVertex::Unbind();
     GLFramebuffer::Unbind();
 }
@@ -208,6 +211,17 @@ void GLContext::SetIVec3(const char* name, int v0, int v1, int v2) {
 
 void GLContext::SetIVec4(const char* name, int v0, int v1, int v2, int v3) {
     if (shader_) glUniform4i(shader_->GetUniformLocation(name), v0, v1, v2, v3);
+}
+
+void GLContext::SetTexture2D(int unit, const void* data, int width, int height) {
+    textures_.emplace(data, width, height);
+    textures_.top().Bind(unit);
+}
+
+void GLContext::ReleaseTextures() {
+    while (!textures_.empty()) {
+        textures_.pop();
+    }
 }
 
 } // namespace glshaderkit

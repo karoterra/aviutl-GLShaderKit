@@ -1,0 +1,35 @@
+--[[
+    サンプルシェーダーでアニメーション効果
+]]
+--track0:track0,-10000,10000,0
+--track1:track1,-10000,10000,0
+--track2:track2,-10000,10000,0
+--track3:track3,-10000,10000,0
+--file:
+tonumber(nil)
+
+local GLShaderKit = require "GLShaderKit"
+
+local shader_path = file or ""
+
+local VERTEX_NUM = 1
+
+local data, w, h = obj.getpixeldata()
+
+if GLShaderKit.isInitialized() then
+    GLShaderKit.activate()
+    GLShaderKit.setVertex(VERTEX_NUM)
+    GLShaderKit.setShader(shader_path)
+    GLShaderKit.setFloat("resolution", w, h)
+    GLShaderKit.setFloat("time", obj.time)
+    GLShaderKit.setFloat("totalTime", obj.totaltime)
+    GLShaderKit.setInt("frame", obj.frame)
+    GLShaderKit.setInt("totalFrame", obj.totalframe)
+    GLShaderKit.setFloat("track", obj.track0, obj.track1, obj.track2, obj.track3)
+    GLShaderKit.setTexture2D(0, data, w, h)
+    GLShaderKit.draw(data, w, h)
+
+    GLShaderKit.deactivate()
+end
+
+obj.putpixeldata(data)

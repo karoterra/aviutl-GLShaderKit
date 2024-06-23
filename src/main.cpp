@@ -133,6 +133,18 @@ int setInt(lua_State* L) {
     return 0;
 }
 
+int setTexture2D(lua_State* L) {
+    if (lua_gettop(L) < 4) {
+        return luaL_error(L, "setTexture2D()には引数が4個必要です");
+    }
+    int unit = lua_tointeger(L, 1);
+    void* data = lua_touserdata(L, 2);
+    int width = lua_tointeger(L, 3);
+    int height = lua_tointeger(L, 4);
+    glshaderkit::GLContext::Instance().SetTexture2D(unit, data, width, height);
+    return 0;
+}
+
 static const luaL_Reg kLibFunctions[] = {
     {"version", version},
     {"isInitialized", isInitialized},
@@ -147,6 +159,7 @@ static const luaL_Reg kLibFunctions[] = {
     {"draw", draw},
     {"setFloat", setFloat},
     {"setInt", setInt},
+    {"setTexture2D", setTexture2D},
     {nullptr, nullptr},
 };
 

@@ -33,6 +33,8 @@ add_library(GLShaderKit SHARED
     src/gl_framebuffer.cpp
     src/gl_vertex.hpp
     src/gl_vertex.cpp
+    src/gl_texture.hpp
+    src/gl_texture.cpp
     ${GLAD_SOURCE_DIR}/gl.c
     ${GLAD_SOURCE_DIR}/wgl.c
 )
@@ -64,6 +66,7 @@ add_custom_target(debug_deploy ALL
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_info.obj
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_draw.obj
+        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_effect.anm
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

@@ -95,7 +95,7 @@ void GLContext::Initialize() {
 
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(tempContext);
-    if(!wglMakeCurrent(hdc_, hglrc_)){
+    if (!wglMakeCurrent(hdc_, hglrc_)) {
         std::string msg = "コンテキストの切替に失敗しました。" + Log::GetLastErrorMessage();
         throw std::runtime_error(msg);
     }
@@ -106,12 +106,22 @@ void GLContext::Initialize() {
         throw std::runtime_error(msg);
     }
 
+    fbo_.reset(new GLFramebuffer(100, 100));
+    vertex_.reset(new GLVertex(1));
+
     wglMakeCurrent(NULL, NULL);
 
     initialized_ = true;
 }
 
 void GLContext::Release() {
+    Activate();
+
+    // GLオブジェクトの開放
+    fbo_.reset();
+    shader_.reset();
+    vertex_.reset();
+
     Deactivate();
 
     if (hglrc_ != NULL) {
@@ -128,6 +138,76 @@ void GLContext::Release() {
     }
 
     initialized_ = false;
+}
+
+void GLContext::SetVertex(int n) {
+    vertex_->Resize(n);
+}
+
+void GLContext::SetShader(const std::string& path) {
+    if (path.empty() || path == currentShader_) {
+        return;
+    }
+
+    try {
+        shader_.reset(new GLShader(path));
+        shader_->Use();
+        currentShader_ = path;
+    }
+    catch (const std::runtime_error& e) {
+        Log::Error(e.what());
+        shader_.reset();
+        currentShader_ = "";
+    }
+}
+
+void GLContext::Draw(void* data, int width, int height) {
+    if (!shader_) {
+        return;
+    }
+
+    fbo_->Resize(width, height);
+    fbo_->Bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    vertex_->Bind();
+
+    glDrawElements(GL_TRIANGLES, vertex_->IndexCount(), GL_UNSIGNED_INT, nullptr);
+    glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, data);
+
+    GLVertex::Unbind();
+    GLFramebuffer::Unbind();
+}
+
+void GLContext::SetFloat(const char* name, float v0) {
+    if (shader_) glUniform1f(shader_->GetUniformLocation(name), v0);
+}
+
+void GLContext::SetVec2(const char* name, float v0, float v1) {
+    if (shader_) glUniform2f(shader_->GetUniformLocation(name), v0, v1);
+}
+
+void GLContext::SetVec3(const char* name, float v0, float v1, float v2) {
+    if (shader_) glUniform3f(shader_->GetUniformLocation(name), v0, v1, v2);
+}
+
+void GLContext::SetVec4(const char* name, float v0, float v1, float v2, float v3) {
+    if (shader_) glUniform4f(shader_->GetUniformLocation(name), v0, v1, v2, v3);
+}
+
+void GLContext::SetInt(const char* name, int v0) {
+    if (shader_) glUniform1i(shader_->GetUniformLocation(name), v0);
+}
+
+void GLContext::SetIVec2(const char* name, int v0, int v1) {
+    if (shader_) glUniform2i(shader_->GetUniformLocation(name), v0, v1);
+}
+
+void GLContext::SetIVec3(const char* name, int v0, int v1, int v2) {
+    if (shader_) glUniform3i(shader_->GetUniformLocation(name), v0, v1, v2);
+}
+
+void GLContext::SetIVec4(const char* name, int v0, int v1, int v2, int v3) {
+    if (shader_) glUniform4i(shader_->GetUniformLocation(name), v0, v1, v2, v3);
 }
 
 } // namespace glshaderkit

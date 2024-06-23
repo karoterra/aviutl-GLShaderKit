@@ -56,6 +56,83 @@ int deactivate(lua_State* L) {
     return 0;
 }
 
+int setVertex(lua_State* L) {
+    if (lua_gettop(L) < 1) {
+        return luaL_error(L, "setVertex()には引数が1個必要です");
+    }
+    int n = lua_tointeger(L, 1);
+    glshaderkit::GLContext::Instance().SetVertex(n);
+    return 0;
+}
+
+int setShader(lua_State* L) {
+    if (lua_gettop(L) < 1) {
+        return luaL_error(L, "setShader()には引数が1個必要です");
+    }
+    const char* path = lua_tostring(L, 1);
+    glshaderkit::GLContext::Instance().SetShader((path ? path : ""));
+    return 0;
+}
+
+int draw(lua_State* L) {
+    if (lua_gettop(L) < 3) {
+        return luaL_error(L, "draw()には引数が3個必要です");
+    }
+    void* data = lua_touserdata(L, 1);
+    int w = lua_tointeger(L, 2);
+    int h = lua_tointeger(L, 3);
+    glshaderkit::GLContext::Instance().Draw(data, w, h);
+    return 0;
+}
+
+int setFloat(lua_State* L) {
+    int top = lua_gettop(L);
+    if (top < 2) {
+        return luaL_error(L, "setFloat()には引数が2から5個の引数が必要です");
+    }
+    const char* name = lua_tostring(L, 1);
+    auto& context = glshaderkit::GLContext::Instance();
+    switch (top) {
+    case 2:
+        context.SetFloat(name, lua_tonumber(L, 2));
+        break;
+    case 3:
+        context.SetVec2(name, lua_tonumber(L, 2), lua_tonumber(L, 3));
+        break;
+    case 4:
+        context.SetVec3(name, lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+        break;
+    case 5:
+        context.SetVec4(name, lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
+        break;
+    }
+    return 0;
+}
+
+int setInt(lua_State* L) {
+    int top = lua_gettop(L);
+    if (top < 2) {
+        return luaL_error(L, "setInt()には引数が2から5個の引数が必要です");
+    }
+    const char* name = lua_tostring(L, 1);
+    auto& context = glshaderkit::GLContext::Instance();
+    switch (top) {
+    case 2:
+        context.SetInt(name, lua_tointeger(L, 2));
+        break;
+    case 3:
+        context.SetIVec2(name, lua_tointeger(L, 2), lua_tointeger(L, 3));
+        break;
+    case 4:
+        context.SetIVec3(name, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
+        break;
+    case 5:
+        context.SetIVec4(name, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
+        break;
+    }
+    return 0;
+}
+
 static const luaL_Reg kLibFunctions[] = {
     {"version", version},
     {"isInitialized", isInitialized},
@@ -65,6 +142,11 @@ static const luaL_Reg kLibFunctions[] = {
     {"glslVersion", glslVersion},
     {"activate", activate},
     {"deactivate", deactivate},
+    {"setVertex", setVertex},
+    {"setShader", setShader},
+    {"draw", draw},
+    {"setFloat", setFloat},
+    {"setInt", setInt},
     {nullptr, nullptr},
 };
 

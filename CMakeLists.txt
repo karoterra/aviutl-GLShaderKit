@@ -27,6 +27,12 @@ add_library(GLShaderKit SHARED
     src/log.hpp
     src/gl_context.hpp
     src/gl_context.cpp
+    src/gl_shader.hpp
+    src/gl_shader.cpp
+    src/gl_framebuffer.hpp
+    src/gl_framebuffer.cpp
+    src/gl_vertex.hpp
+    src/gl_vertex.cpp
     ${GLAD_SOURCE_DIR}/gl.c
     ${GLAD_SOURCE_DIR}/wgl.c
 )
@@ -57,6 +63,7 @@ add_custom_target(debug_deploy ALL
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_info.obj
+        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_draw.obj
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

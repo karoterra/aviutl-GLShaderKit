@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include <Windows.h>
@@ -7,6 +8,9 @@
 #include <glad/gl.h>
 #include <glad/wgl.h>
 
+#include "gl_framebuffer.hpp"
+#include "gl_vertex.hpp"
+#include "gl_shader.hpp"
 #include "log.hpp"
 
 namespace glshaderkit {
@@ -44,6 +48,20 @@ public:
         wglMakeCurrent(NULL, NULL);
     }
 
+    void SetVertex(int n);
+    void SetShader(const std::string& path);
+    void Draw(void* data, int width, int height);
+
+    void SetFloat(const char* name, float v0);
+    void SetVec2(const char* name, float v0, float v1);
+    void SetVec3(const char* name, float v0, float v1, float v2);
+    void SetVec4(const char* name, float v0, float v1, float v2, float v3);
+
+    void SetInt(const char* name, int v0);
+    void SetIVec2(const char* name, int v0, int v1);
+    void SetIVec3(const char* name, int v0, int v1, int v2);
+    void SetIVec4(const char* name, int v0, int v1, int v2, int v3);
+
     // GLの情報を取得
     const char* GetString(GLenum name) {
         if (!initialized_) {
@@ -78,6 +96,11 @@ private:
     HWND hwnd_;
     HDC hdc_;
     HGLRC hglrc_;
+
+    std::unique_ptr<GLFramebuffer> fbo_;
+    std::unique_ptr<GLVertex> vertex_;
+    std::unique_ptr<GLShader> shader_;
+    std::string currentShader_;
 };
 
 } // namespace glshaderkit

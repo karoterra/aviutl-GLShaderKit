@@ -70,7 +70,8 @@ int setShader(lua_State* L) {
         return luaL_error(L, "setShader()には引数が1個必要です");
     }
     const char* path = lua_tostring(L, 1);
-    glshaderkit::GLContext::Instance().SetShader((path ? path : ""));
+    bool forceReload = lua_toboolean(L, 2);
+    glshaderkit::GLContext::Instance().SetShader((path ? path : ""), forceReload);
     return 0;
 }
 

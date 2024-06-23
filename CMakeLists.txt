@@ -29,6 +29,7 @@ add_library(GLShaderKit SHARED
     src/gl_context.cpp
     src/gl_shader.hpp
     src/gl_shader.cpp
+    src/gl_shader_manager.hpp
     src/gl_framebuffer.hpp
     src/gl_framebuffer.cpp
     src/gl_vertex.hpp

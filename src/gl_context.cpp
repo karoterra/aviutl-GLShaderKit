@@ -119,8 +119,8 @@ void GLContext::Release() {
 
     // GLオブジェクトの開放
     fbo_.reset();
-    shader_.reset();
     vertex_.reset();
+    shaderManager_.Release();
     ReleaseTextures();
 
     Deactivate();
@@ -145,25 +145,22 @@ void GLContext::SetVertex(int n) {
     vertex_->Resize(n);
 }
 
-void GLContext::SetShader(const std::string& path) {
-    if (path.empty() || path == currentShader_) {
+void GLContext::SetShader(const std::string& path, bool forceReload) {
+    if (path.empty()) {
         return;
     }
 
     try {
-        shader_.reset(new GLShader(path));
-        shader_->Use();
-        currentShader_ = path;
+        GLShader& shader = shaderManager_.Get(path, forceReload);
+        shader.Use();
     }
     catch (const std::runtime_error& e) {
         Log::Error(e.what());
-        shader_.reset();
-        currentShader_ = "";
     }
 }
 
 void GLContext::Draw(void* data, int width, int height) {
-    if (!shader_) {
+    if (!shaderManager_.Current()) {
         return;
     }
 
@@ -182,35 +179,59 @@ void GLContext::Draw(void* data, int width, int height) {
 }
 
 void GLContext::SetFloat(const char* name, float v0) {
-    if (shader_) glUniform1f(shader_->GetUniformLocation(name), v0);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform1f(current->shader.GetUniformLocation(name), v0);
+    }
 }
 
 void GLContext::SetVec2(const char* name, float v0, float v1) {
-    if (shader_) glUniform2f(shader_->GetUniformLocation(name), v0, v1);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform2f(current->shader.GetUniformLocation(name), v0, v1);
+    }
 }
 
 void GLContext::SetVec3(const char* name, float v0, float v1, float v2) {
-    if (shader_) glUniform3f(shader_->GetUniformLocation(name), v0, v1, v2);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform3f(current->shader.GetUniformLocation(name), v0, v1, v2);
+    }
 }
 
 void GLContext::SetVec4(const char* name, float v0, float v1, float v2, float v3) {
-    if (shader_) glUniform4f(shader_->GetUniformLocation(name), v0, v1, v2, v3);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform4f(current->shader.GetUniformLocation(name), v0, v1, v2, v3);
+    }
 }
 
 void GLContext::SetInt(const char* name, int v0) {
-    if (shader_) glUniform1i(shader_->GetUniformLocation(name), v0);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform1i(current->shader.GetUniformLocation(name), v0);
+    }
 }
 
 void GLContext::SetIVec2(const char* name, int v0, int v1) {
-    if (shader_) glUniform2i(shader_->GetUniformLocation(name), v0, v1);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform2i(current->shader.GetUniformLocation(name), v0, v1);
+    }
 }
 
 void GLContext::SetIVec3(const char* name, int v0, int v1, int v2) {
-    if (shader_) glUniform3i(shader_->GetUniformLocation(name), v0, v1, v2);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform3i(current->shader.GetUniformLocation(name), v0, v1, v2);
+    }
 }
 
 void GLContext::SetIVec4(const char* name, int v0, int v1, int v2, int v3) {
-    if (shader_) glUniform4i(shader_->GetUniformLocation(name), v0, v1, v2, v3);
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform4i(current->shader.GetUniformLocation(name), v0, v1, v2, v3);
+    }
 }
 
 void GLContext::SetTexture2D(int unit, const void* data, int width, int height) {

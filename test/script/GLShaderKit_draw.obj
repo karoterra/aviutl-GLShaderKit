@@ -5,6 +5,7 @@
 --track1:高さ,1,4000,900,1
 --track2:track2,-10000,10000,0
 --track3:track3,-10000,10000,0
+--check0:再読込,0
 --file:
 tonumber(nil)
 
@@ -14,6 +15,7 @@ local max_w, max_h = obj.getinfo("image_max")
 local width = math.min(max_w, obj.track0)
 local height = math.min(max_h, obj.track1)
 local shader_path = file or ""
+local force_reload = obj.check0
 
 local VERTEX_NUM = 1
 
@@ -25,7 +27,7 @@ if GLShaderKit.isInitialized() then
     GLShaderKit.activate()
 
     GLShaderKit.setVertex(VERTEX_NUM)
-    GLShaderKit.setShader(shader_path)
+    GLShaderKit.setShader(shader_path, force_reload)
     GLShaderKit.setFloat("resolution", width, height)
     GLShaderKit.setFloat("time", obj.time)
     GLShaderKit.setFloat("totalTime", obj.totaltime)

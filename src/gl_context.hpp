@@ -12,6 +12,7 @@
 #include "gl_framebuffer.hpp"
 #include "gl_vertex.hpp"
 #include "gl_shader.hpp"
+#include "gl_shader_manager.hpp"
 #include "gl_texture.hpp"
 #include "log.hpp"
 
@@ -51,7 +52,7 @@ public:
     }
 
     void SetVertex(int n);
-    void SetShader(const std::string& path);
+    void SetShader(const std::string& path, bool forceReload);
     void Draw(void* data, int width, int height);
 
     void SetFloat(const char* name, float v0);
@@ -80,7 +81,9 @@ public:
 
 private:
     // デフォルトコンストラクタ
-    GLContext() : initialized_(false), hwnd_(NULL), hdc_(NULL), hglrc_(NULL) {}
+    GLContext()
+        : initialized_(false), hwnd_(NULL), hdc_(NULL), hglrc_(NULL)
+        , shaderManager_(4) {}
 
     // デストラクタ
     ~GLContext() {}
@@ -105,8 +108,7 @@ private:
 
     std::unique_ptr<GLFramebuffer> fbo_;
     std::unique_ptr<GLVertex> vertex_;
-    std::unique_ptr<GLShader> shader_;
-    std::string currentShader_;
+    GLShaderManager shaderManager_;
     std::stack<GLTexture> textures_;
 };
 

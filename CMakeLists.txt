@@ -68,11 +68,11 @@ add_custom_target(debug_deploy ALL
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
-        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_info.obj
-        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_draw.obj
-        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_drawPoints.obj
-        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_effect.anm
-        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_effectInstanced.anm
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_info.obj
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_draw.obj
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_drawPoints.obj
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effect.anm
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effectInstanced.anm
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

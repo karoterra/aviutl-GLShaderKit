@@ -24,6 +24,10 @@
    - `GLShaderKit.dll`
    - `GLShaderKit.ini`
 
+## 使用例
+
+GLShaderKit を使用したスクリプト・シェーダーのサンプルは [example](example) を参照してください。
+
 ## 設定
 
 `GLShaderKit.dll` と同じフォルダに置いた `GLShaderKit.ini` は設定ファイルです。

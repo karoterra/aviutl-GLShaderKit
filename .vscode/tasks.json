@@ -41,5 +41,21 @@
             "problemMatcher": [],
             "detail": "リリースビルド"
         },
+        {
+            "type": "shell",
+            "label": "CMake: Package",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--preset",
+                "release",
+                "--target",
+                "package"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "リリースビルド"
+        },
     ]
 }

@@ -78,3 +78,15 @@ add_custom_target(debug_deploy ALL
     DEPENDS GLShaderKit
     COMMENT "debug_deploy -> ${AVIUTL_DIR}"
 )
+
+# リリース用
+add_custom_target(package
+    COMMAND 7z a publish/${PROJECT_NAME}_v${PROJECT_VERSION}.zip
+        $<TARGET_FILE:GLShaderKit>
+        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
+        README.md
+        LICENSE
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    DEPENDS GLShaderKit
+    COMMENT "package -> publish/${PROJECT_NAME}_v${PROJECT_VERSION}.zip"
+)

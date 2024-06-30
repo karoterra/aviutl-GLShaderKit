@@ -125,9 +125,10 @@ int draw(lua_State* L) {
     void* data = lua_touserdata(L, 2);
     int w = lua_tointeger(L, 3);
     int h = lua_tointeger(L, 4);
+    int instanceCount = lua_tointeger(L, 5);
 
     GLenum mode = GetGLDrawMode(modeStr);
-    glshaderkit::GLContext::Instance().Draw(mode, data, w, h);
+    glshaderkit::GLContext::Instance().Draw(mode, data, w, h, instanceCount);
     return 0;
 }
 

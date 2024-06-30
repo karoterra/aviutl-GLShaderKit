@@ -1,0 +1,40 @@
+--[[
+    サンプルシェーダーでアニメーション効果 (Instancing)
+]]
+--track0:個数,1,10000,25,1
+--track1:track1,-10000,10000,0
+--track2:track2,-10000,10000,0
+--track3:track3,-10000,10000,0
+--check0:再読込,0
+--file:
+tonumber(nil)
+
+local GLShaderKit = require "GLShaderKit"
+
+local shader_path = file or ""
+local force_reload = obj.check0
+
+local instanceCount = obj.track0
+
+local VERTEX_NUM = 1
+
+local data, w, h = obj.getpixeldata()
+
+if GLShaderKit.isInitialized() then
+    GLShaderKit.activate()
+    GLShaderKit.setPlaneVertex(VERTEX_NUM)
+    GLShaderKit.setShader(shader_path, force_reload)
+    GLShaderKit.setFloat("resolution", w, h)
+    GLShaderKit.setFloat("time", obj.time)
+    GLShaderKit.setFloat("totalTime", obj.totaltime)
+    GLShaderKit.setInt("frame", obj.frame)
+    GLShaderKit.setInt("totalFrame", obj.totalframe)
+    GLShaderKit.setFloat("track", obj.track0, obj.track1, obj.track2, obj.track3)
+    GLShaderKit.setInt("instanceCount", instanceCount)
+    GLShaderKit.setTexture2D(0, data, w, h)
+    GLShaderKit.draw("TRIANGLES", data, w, h, instanceCount)
+
+    GLShaderKit.deactivate()
+end
+
+obj.putpixeldata(data)

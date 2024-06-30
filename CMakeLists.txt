@@ -72,6 +72,7 @@ add_custom_target(debug_deploy ALL
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_draw.obj
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_drawPoints.obj
         ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_effect.anm
+        ${PROJECT_SOURCE_DIR}/test/script/GLShaderKit_effectInstanced.anm
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

@@ -166,9 +166,13 @@ void GLContext::SetShader(const std::string& path, bool forceReload) {
     }
 }
 
-void GLContext::Draw(GLenum mode, void* data, int width, int height) {
+void GLContext::Draw(GLenum mode, void* data, int width, int height, int instanceCount) {
     if (!shaderManager_.Current()) {
         return;
+    }
+
+    if (instanceCount < 1) {
+        instanceCount = 1;
     }
 
     fbo_->Resize(width, height);
@@ -178,10 +182,10 @@ void GLContext::Draw(GLenum mode, void* data, int width, int height) {
 
     switch (vertex_->GetPrimitive()) {
     case GLVertex::Primitive::Plane:
-        glDrawElements(mode, vertex_->IndexCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElementsInstanced(mode, vertex_->IndexCount(), GL_UNSIGNED_INT, nullptr, instanceCount);
         break;
     case GLVertex::Primitive::Points:
-        glDrawArrays(mode, 0, vertex_->Size());
+        glDrawArraysInstanced(mode, 0, vertex_->Size(), instanceCount);
         break;
     }
     glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, data);

@@ -4,7 +4,7 @@
 
 namespace glshaderkit {
 
-GLVertex::GLVertex(int n) : vao_(0), vbo_(0), ibo_(0), size_(0), indexCount_(0) {
+GLVertex::GLVertex(int n) : vao_(0), vbo_(0), ibo_(0), primitive_(Primitive::Plane), size_(0), indexCount_(0) {
     if (n < 1) {
         n = 1;
     }
@@ -41,15 +41,16 @@ GLVertex& GLVertex::operator=(GLVertex&& other) {
     return *this;
 }
 
-void GLVertex::Resize(int n) {
-    if (n == size_) {
+void GLVertex::SetPlane(int n) {
+    if (primitive_ == Primitive::Plane && size_ == n) {
         return;
     }
-    Release();
-    Initialize(n);
-}
 
-void GLVertex::Initialize(int n) {
+    Release();
+    if (n < 1) {
+        n = 1;
+    }
+
     // 頂点座標とテクスチャ座標のデータ生成
     int numVertices = (n + 1) * (n + 1);
     std::vector<float> vertices(numVertices * 5);
@@ -114,8 +115,49 @@ void GLVertex::Initialize(int n) {
     glVertexArrayAttribFormat(vao_, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
     glVertexArrayAttribBinding(vao_, 1, 0);
 
-    size_ = 0;
+    primitive_ = Primitive::Plane;
+    size_ = n;
     indexCount_ = indices.size();
+}
+
+void GLVertex::SetPoints(int n) {
+    if (primitive_ == Primitive::Points && size_ == n) {
+        return;
+    }
+
+    Release();
+    if (n < 1) {
+        n = 1;
+    }
+
+    // 頂点番号データ生成
+    std::vector<float> vertices(n);
+    for (int i = 0; i < n; i++) {
+        vertices[i] = static_cast<float>(i);
+    }
+
+    // VBO
+    glCreateBuffers(1, &vbo_);
+    glNamedBufferData(vbo_, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+
+    // IBOは不使用
+
+    // VAO
+    glCreateVertexArrays(1, &vao_);
+    glVertexArrayVertexBuffer(vao_, 0, vbo_, 0, 1 * sizeof(float));
+
+    // 頂点番号
+    glEnableVertexArrayAttrib(vao_, 0);
+    glVertexArrayAttribFormat(vao_, 0, 1, GL_FLOAT, GL_FALSE, 0);
+    glVertexArrayAttribBinding(vao_, 0, 0);
+
+    primitive_ = Primitive::Points;
+    size_ = n;
+    indexCount_ = 0;
+}
+
+void GLVertex::Initialize(int n) {
+    SetPlane(n);
 }
 
 void GLVertex::Release() {

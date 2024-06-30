@@ -52,9 +52,10 @@ public:
         wglMakeCurrent(NULL, NULL);
     }
 
-    void SetVertex(int n);
+    void SetPlaneVertex(int n);
+    void SetPointVertex(int n);
     void SetShader(const std::string& path, bool forceReload);
-    void Draw(void* data, int width, int height);
+    void Draw(GLenum mode, void* data, int width, int height);
 
     void SetFloat(const char* name, float v0);
     void SetVec2(const char* name, float v0, float v1);

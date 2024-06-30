@@ -1,8 +1,8 @@
 --[[
     サンプルシェーダーで描画
 ]]
---track0:幅,1,4000,1600,1
---track1:高さ,1,4000,900,1
+--track0:頂点数,1,4000,10,1
+--track1:頂点サイズ,1,4000,10,0.01
 --track2:track2,-10000,10000,0
 --track3:track3,-10000,10000,0
 --check0:再読込,0
@@ -11,13 +11,13 @@ tonumber(nil)
 
 local GLShaderKit = require "GLShaderKit"
 
-local max_w, max_h = obj.getinfo("image_max")
-local width = math.min(max_w, obj.track0)
-local height = math.min(max_h, obj.track1)
+local width = 1080
+local height = 1080
 local shader_path = file or ""
 local force_reload = obj.check0
 
-local VERTEX_NUM = 1
+local vertex_num = obj.track0
+local point_size = obj.track1
 
 obj.setoption("drawtarget", "tempbuffer", width, height)
 obj.load("tempbuffer")
@@ -26,7 +26,7 @@ local data, w, h = obj.getpixeldata()
 if GLShaderKit.isInitialized() then
     GLShaderKit.activate()
 
-    GLShaderKit.setPlaneVertex(VERTEX_NUM)
+    GLShaderKit.setPointVertex(vertex_num)
     GLShaderKit.setShader(shader_path, force_reload)
     GLShaderKit.setFloat("resolution", width, height)
     GLShaderKit.setFloat("time", obj.time)
@@ -34,7 +34,9 @@ if GLShaderKit.isInitialized() then
     GLShaderKit.setInt("frame", obj.frame)
     GLShaderKit.setInt("totalFrame", obj.totalframe)
     GLShaderKit.setFloat("track", obj.track0, obj.track1, obj.track2, obj.track3)
-    GLShaderKit.draw("TRIANGLES", data, w, h)
+    GLShaderKit.setFloat("pointSize", point_size)
+    GLShaderKit.setFloat("vertexCount", vertex_num)
+    GLShaderKit.draw("POINTS", data, w, h)
 
     GLShaderKit.deactivate()
 end

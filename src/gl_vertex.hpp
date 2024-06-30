@@ -6,6 +6,11 @@ namespace glshaderkit {
 
 class GLVertex {
 public:
+    enum class Primitive{
+        Plane,
+        Points,
+    };
+
     GLVertex(int n);
     ~GLVertex() {
         Release();
@@ -27,7 +32,12 @@ public:
         glBindVertexArray(0);
     }
 
-    void Resize(int n);
+    void SetPlane(int n);
+    void SetPoints(int n);
+
+    Primitive GetPrimitive() const {
+        return primitive_;
+    }
 
     int Size() const {
         return size_;
@@ -44,6 +54,7 @@ private:
     GLuint vao_;
     GLuint vbo_;
     GLuint ibo_;
+    Primitive primitive_;
     int size_;
     int indexCount_;
 };

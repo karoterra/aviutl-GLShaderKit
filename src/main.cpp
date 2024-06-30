@@ -1,7 +1,10 @@
 #include <Windows.h>
 
+#include <string>
+#include <unordered_map>
 #include <filesystem>
 
+#include <glad/gl.h>
 #include <lua.hpp>
 
 #include "gl_context.hpp"
@@ -15,6 +18,31 @@
 #endif
 
 HINSTANCE g_hinst = nullptr;
+
+GLenum GetGLDrawMode(const std::string& modeStr) {
+    static const std::unordered_map<std::string, GLenum> modeMap = {
+        {"POINTS", GL_POINTS},
+        {"LINE_STRIP", GL_LINE_STRIP},
+        {"LINE_LOOP", GL_LINE_LOOP},
+        {"LINES", GL_LINES},
+        {"LINE_STRIP_ADJACENCY", GL_LINE_STRIP_ADJACENCY},
+        {"LINES_ADJACENCY", GL_LINES_ADJACENCY},
+        {"TRIANGLE_STRIP", GL_TRIANGLE_STRIP},
+        {"TRIANGLE_FAN", GL_TRIANGLE_FAN},
+        {"TRIANGLES", GL_TRIANGLES},
+        {"TRIANGLE_STRIP_ADJACENCY", GL_TRIANGLE_STRIP_ADJACENCY},
+        {"TRIANGLES_ADJACENCY", GL_TRIANGLES_ADJACENCY},
+        {"PATCHES", GL_PATCHES},
+    };
+
+    auto it = modeMap.find(modeStr);
+    if (it != modeMap.end()) {
+        return it->second;
+    }
+    else {
+        return GL_TRIANGLES;
+    }
+}
 
 int version(lua_State* L) {
     lua_pushstring(L, GL_SHADER_KIT_VERSION);
@@ -61,12 +89,21 @@ int deactivate(lua_State* L) {
     return 0;
 }
 
-int setVertex(lua_State* L) {
+int setPlaneVertex(lua_State* L) {
     if (lua_gettop(L) < 1) {
-        return luaL_error(L, "setVertex()には引数が1個必要です");
+        return luaL_error(L, "setPlaneVertex()には引数が1個必要です");
     }
     int n = lua_tointeger(L, 1);
-    glshaderkit::GLContext::Instance().SetVertex(n);
+    glshaderkit::GLContext::Instance().SetPlaneVertex(n);
+    return 0;
+}
+
+int setPointVertex(lua_State* L) {
+    if (lua_gettop(L) < 1) {
+        return luaL_error(L, "setPointVertex()には引数が1個必要です");
+    }
+    int n = lua_tointeger(L, 1);
+    glshaderkit::GLContext::Instance().SetPointVertex(n);
     return 0;
 }
 
@@ -81,13 +118,16 @@ int setShader(lua_State* L) {
 }
 
 int draw(lua_State* L) {
-    if (lua_gettop(L) < 3) {
-        return luaL_error(L, "draw()には引数が3個必要です");
+    if (lua_gettop(L) < 4) {
+        return luaL_error(L, "draw()には引数が4個必要です");
     }
-    void* data = lua_touserdata(L, 1);
-    int w = lua_tointeger(L, 2);
-    int h = lua_tointeger(L, 3);
-    glshaderkit::GLContext::Instance().Draw(data, w, h);
+    const char* modeStr = luaL_checkstring(L, 1);
+    void* data = lua_touserdata(L, 2);
+    int w = lua_tointeger(L, 3);
+    int h = lua_tointeger(L, 4);
+
+    GLenum mode = GetGLDrawMode(modeStr);
+    glshaderkit::GLContext::Instance().Draw(mode, data, w, h);
     return 0;
 }
 
@@ -160,7 +200,8 @@ static const luaL_Reg kLibFunctions[] = {
     {"glslVersion", glslVersion},
     {"activate", activate},
     {"deactivate", deactivate},
-    {"setVertex", setVertex},
+    {"setPlaneVertex", setPlaneVertex},
+    {"setPointVertex", setPointVertex},
     {"setShader", setShader},
     {"draw", draw},
     {"setFloat", setFloat},

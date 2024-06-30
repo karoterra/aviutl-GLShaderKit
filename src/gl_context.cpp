@@ -110,6 +110,8 @@ void GLContext::Initialize(const Config& config) {
     vertex_.reset(new GLVertex(1));
     shaderManager_.SetCapacity(config.shaderCacheCapacity);
 
+    glEnable(GL_PROGRAM_POINT_SIZE);
+
     wglMakeCurrent(NULL, NULL);
 
     initialized_ = true;
@@ -142,8 +144,12 @@ void GLContext::Release() {
     initialized_ = false;
 }
 
-void GLContext::SetVertex(int n) {
-    vertex_->Resize(n);
+void GLContext::SetPlaneVertex(int n) {
+    vertex_->SetPlane(n);
+}
+
+void GLContext::SetPointVertex(int n) {
+    vertex_->SetPoints(n);
 }
 
 void GLContext::SetShader(const std::string& path, bool forceReload) {
@@ -160,7 +166,7 @@ void GLContext::SetShader(const std::string& path, bool forceReload) {
     }
 }
 
-void GLContext::Draw(void* data, int width, int height) {
+void GLContext::Draw(GLenum mode, void* data, int width, int height) {
     if (!shaderManager_.Current()) {
         return;
     }
@@ -170,7 +176,14 @@ void GLContext::Draw(void* data, int width, int height) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     vertex_->Bind();
 
-    glDrawElements(GL_TRIANGLES, vertex_->IndexCount(), GL_UNSIGNED_INT, nullptr);
+    switch (vertex_->GetPrimitive()) {
+    case GLVertex::Primitive::Plane:
+        glDrawElements(mode, vertex_->IndexCount(), GL_UNSIGNED_INT, nullptr);
+        break;
+    case GLVertex::Primitive::Points:
+        glDrawArrays(mode, 0, vertex_->Size());
+        break;
+    }
     glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
     GLTexture::Unbind();

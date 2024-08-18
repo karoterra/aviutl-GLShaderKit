@@ -6,7 +6,6 @@
 
 #include <glad/gl.h>
 #include <lua.hpp>
-#include <aviutl.hpp>
 
 #include "gl_context.hpp"
 #include "config.hpp"
@@ -17,6 +16,8 @@
 #ifndef GL_SHADER_KIT_VERSION
 #   define GL_SHADER_KIT_VERSION "0.0.0"
 #endif
+
+HINSTANCE g_hinst = nullptr;
 
 GLenum GetGLDrawMode(const std::string& modeStr) {
     static const std::unordered_map<std::string, GLenum> modeMap = {
@@ -212,18 +213,12 @@ static const luaL_Reg kLibFunctions[] = {
 
 // Luaモジュールとしてロードされたときの処理
 GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
-    luaL_register(L, "GLShaderKit", kLibFunctions);
-    return 1;
-}
-
-// フィルタプラグイン初期化処理
-BOOL func_init(AviUtl::FilterPlugin* fp) {
     auto& context = glshaderkit::GLContext::Instance();
     try {
         glshaderkit::Config config;
         // 設定ファイルが見つかれば読み込む
         char dllPath[MAX_PATH];
-        if (GetModuleFileNameA(fp->dll_hinst, dllPath, MAX_PATH)) {
+        if (GetModuleFileNameA(g_hinst, dllPath, MAX_PATH)) {
             std::filesystem::path configPath(dllPath);
             configPath.replace_extension(".ini");
             if (std::filesystem::exists(configPath)) {
@@ -243,30 +238,23 @@ BOOL func_init(AviUtl::FilterPlugin* fp) {
         context.Release();
     }
 
-    return TRUE;
+    luaL_register(L, "GLShaderKit", kLibFunctions);
+    return 1;
 }
 
-// フィルタプラグイン終了処理
-BOOL func_exit(AviUtl::FilterPlugin* fp) {
-    glshaderkit::GLContext::Instance().Release();
+// DLLエントリーポイント
+BOOL APIENTRY DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
+    switch (reason) {
+    case DLL_PROCESS_ATTACH:
+        g_hinst = hinst;
+        break;
+    case DLL_PROCESS_DETACH:
+        glshaderkit::GLContext::Instance().Release();
+        break;
+    case DLL_THREAD_ATTACH:
+        break;
+    case DLL_THREAD_DETACH:
+        break;
+    }
     return TRUE;
-}
-
-using AviUtl::detail::FilterPluginFlag;
-
-AviUtl::FilterPluginDLL filter_src = {
-    .flag = FilterPluginFlag::AlwaysActive
-        | FilterPluginFlag::PriorityLowest
-        | FilterPluginFlag::ExInformation
-        | FilterPluginFlag::DispFilter
-        | FilterPluginFlag::NoConfig
-        ,
-    .name = "GLShaderKit",
-    .func_init = func_init,
-    .func_exit = func_exit,
-    .information = "GLShaderKit v" GL_SHADER_KIT_VERSION " by karoterra",
-};
-
-GL_SHADER_KIT_API AviUtl::FilterPluginDLL* GetFilterTable(void) {
-    return &filter_src;
 }

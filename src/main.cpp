@@ -6,7 +6,6 @@
 
 #include <glad/gl.h>
 #include <lua.hpp>
-#include <aviutl.hpp>
 
 #include "gl_context.hpp"
 #include "config.hpp"
@@ -17,6 +16,9 @@
 #ifndef GL_SHADER_KIT_VERSION
 #   define GL_SHADER_KIT_VERSION "0.0.0"
 #endif
+
+struct GLShaderKitModule {
+};
 
 GLenum GetGLDrawMode(const std::string& modeStr) {
     static const std::unordered_map<std::string, GLenum> modeMap = {
@@ -191,6 +193,12 @@ int setTexture2D(lua_State* L) {
     return 0;
 }
 
+// ガベージコレクションメタメソッド
+int glshaderkit_gc(lua_State* L) {
+    glshaderkit::GLContext::Instance().Release();
+    return 0;
+}
+
 static const luaL_Reg kLibFunctions[] = {
     {"version", version},
     {"isInitialized", isInitialized},
@@ -212,18 +220,13 @@ static const luaL_Reg kLibFunctions[] = {
 
 // Luaモジュールとしてロードされたときの処理
 GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
-    luaL_register(L, "GLShaderKit", kLibFunctions);
-    return 1;
-}
-
-// フィルタプラグイン初期化処理
-BOOL func_init(AviUtl::FilterPlugin* fp) {
     auto& context = glshaderkit::GLContext::Instance();
     try {
         glshaderkit::Config config;
         // 設定ファイルが見つかれば読み込む
+        HMODULE hmod = GetModuleHandleA("GLShaderKit.dll");
         char dllPath[MAX_PATH];
-        if (GetModuleFileNameA(fp->dll_hinst, dllPath, MAX_PATH)) {
+        if (GetModuleFileNameA(hmod, dllPath, MAX_PATH)) {
             std::filesystem::path configPath(dllPath);
             configPath.replace_extension(".ini");
             if (std::filesystem::exists(configPath)) {
@@ -243,30 +246,32 @@ BOOL func_init(AviUtl::FilterPlugin* fp) {
         context.Release();
     }
 
-    return TRUE;
-}
+    // モジュールオブジェクト作成
+    void* ud = lua_newuserdata(L, sizeof(GLShaderKitModule));
+    if (!ud) {
+        return luaL_error(L, "lua_newuserdata failed");
+    }
 
-// フィルタプラグイン終了処理
-BOOL func_exit(AviUtl::FilterPlugin* fp) {
-    glshaderkit::GLContext::Instance().Release();
-    return TRUE;
-}
+    // メタテーブルを作成
+    luaL_newmetatable(L, "GLShaderKit_Meta");
+    // メタテーブルに関数テーブル登録
+    lua_newtable(L);
+    luaL_register(L, nullptr, kLibFunctions);
+    lua_setfield(L, -2, "__index");
+    // メタテーブルに __gc メソッド登録
+    lua_pushcfunction(L, glshaderkit_gc);
+    lua_setfield(L, -2, "__gc");
+    // メタテーブルをモジュールオブジェクトに関連付ける
+    lua_setmetatable(L, -2);
 
-using AviUtl::detail::FilterPluginFlag;
+    // モジュール登録
+    lua_pushvalue(L, -1);
+    lua_setglobal(L, "GLShaderKit");
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "loaded");
+    lua_pushvalue(L, -3);
+    lua_setfield(L, -2, "GLShaderKit");
+    lua_pop(L, 2);
 
-AviUtl::FilterPluginDLL filter_src = {
-    .flag = FilterPluginFlag::AlwaysActive
-        | FilterPluginFlag::PriorityLowest
-        | FilterPluginFlag::ExInformation
-        | FilterPluginFlag::DispFilter
-        | FilterPluginFlag::NoConfig
-        ,
-    .name = "GLShaderKit",
-    .func_init = func_init,
-    .func_exit = func_exit,
-    .information = "GLShaderKit v" GL_SHADER_KIT_VERSION " by karoterra",
-};
-
-GL_SHADER_KIT_API AviUtl::FilterPluginDLL* GetFilterTable(void) {
-    return &filter_src;
+    return 1;
 }

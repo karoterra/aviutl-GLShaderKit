@@ -18,9 +18,6 @@ set(LUA_LIBRARY_DIR ${PROJECT_SOURCE_DIR}/vendor/lua)
 set(GLAD_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/vendor/glad/include)
 set(GLAD_SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/glad/src)
 
-# aviutl_exedit_sdk
-set(AVIUTL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/vendor/aviutl_exedit_sdk)
-
 # デバッグに使用するAviUtlがあるディレクトリ
 set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 
@@ -47,7 +44,6 @@ target_include_directories(GLShaderKit
     PRIVATE
         ${LUA_INCLUDE_DIR}
         ${GLAD_INCLUDE_DIR}
-        ${AVIUTL_INCLUDE_DIR}
 )
 target_link_directories(GLShaderKit PRIVATE ${LUA_LIBRARY_DIR})
 target_link_libraries(GLShaderKit
@@ -65,25 +61,19 @@ target_compile_definitions(GLShaderKit
         GL_SHADER_KIT_VERSION="${PROJECT_VERSION}"
         NOMINMAX
 )
-set_target_properties(GLShaderKit PROPERTIES SUFFIX .auf)
 
 # 検証用の AviUtl に配置
 add_custom_target(debug_deploy ALL
     ${CMAKE_COMMAND} -E make_directory ${AVIUTL_DIR}/script/GLShaderKit
     COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:GLShaderKit>
+        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_info.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_draw.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_drawPoints.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effect.anm
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effectInstanced.anm
         ${AVIUTL_DIR}/script/GLShaderKit
-    COMMAND ${CMAKE_COMMAND} -E copy
-        $<TARGET_FILE:GLShaderKit>
-        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
-        ${AVIUTL_DIR}/plugins
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.lua
-        ${AVIUTL_DIR}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit
     COMMENT "debug_deploy -> ${AVIUTL_DIR}"
@@ -94,7 +84,6 @@ add_custom_target(package
     COMMAND 7z a publish/${PROJECT_NAME}_v${PROJECT_VERSION}.zip
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
-        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.lua
         README.md
         LICENSE
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

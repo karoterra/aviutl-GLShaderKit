@@ -84,7 +84,6 @@ add_custom_target(package
     COMMAND 7z a publish/${PROJECT_NAME}_v${PROJECT_VERSION}.zip
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
-        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.lua
         README.md
         LICENSE
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

@@ -17,7 +17,8 @@
 #   define GL_SHADER_KIT_VERSION "0.0.0"
 #endif
 
-HINSTANCE g_hinst = nullptr;
+struct GLShaderKitModule {
+};
 
 GLenum GetGLDrawMode(const std::string& modeStr) {
     static const std::unordered_map<std::string, GLenum> modeMap = {
@@ -192,6 +193,12 @@ int setTexture2D(lua_State* L) {
     return 0;
 }
 
+// ガベージコレクションメタメソッド
+int glshaderkit_gc(lua_State* L) {
+    glshaderkit::GLContext::Instance().Release();
+    return 0;
+}
+
 static const luaL_Reg kLibFunctions[] = {
     {"version", version},
     {"isInitialized", isInitialized},
@@ -217,8 +224,9 @@ GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
     try {
         glshaderkit::Config config;
         // 設定ファイルが見つかれば読み込む
+        HMODULE hmod = GetModuleHandleA("GLShaderKit.dll");
         char dllPath[MAX_PATH];
-        if (GetModuleFileNameA(g_hinst, dllPath, MAX_PATH)) {
+        if (GetModuleFileNameA(hmod, dllPath, MAX_PATH)) {
             std::filesystem::path configPath(dllPath);
             configPath.replace_extension(".ini");
             if (std::filesystem::exists(configPath)) {
@@ -238,23 +246,32 @@ GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
         context.Release();
     }
 
-    luaL_register(L, "GLShaderKit", kLibFunctions);
-    return 1;
-}
-
-// DLLエントリーポイント
-BOOL APIENTRY DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved) {
-    switch (reason) {
-    case DLL_PROCESS_ATTACH:
-        g_hinst = hinst;
-        break;
-    case DLL_PROCESS_DETACH:
-        glshaderkit::GLContext::Instance().Release();
-        break;
-    case DLL_THREAD_ATTACH:
-        break;
-    case DLL_THREAD_DETACH:
-        break;
+    // モジュールオブジェクト作成
+    void* ud = lua_newuserdata(L, sizeof(GLShaderKitModule));
+    if (!ud) {
+        return luaL_error(L, "lua_newuserdata failed");
     }
-    return TRUE;
+
+    // メタテーブルを作成
+    luaL_newmetatable(L, "GLShaderKit_Meta");
+    // メタテーブルに関数テーブル登録
+    lua_newtable(L);
+    luaL_register(L, nullptr, kLibFunctions);
+    lua_setfield(L, -2, "__index");
+    // メタテーブルに __gc メソッド登録
+    lua_pushcfunction(L, glshaderkit_gc);
+    lua_setfield(L, -2, "__gc");
+    // メタテーブルをモジュールオブジェクトに関連付ける
+    lua_setmetatable(L, -2);
+
+    // モジュール登録
+    lua_pushvalue(L, -1);
+    lua_setglobal(L, "GLShaderKit");
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "loaded");
+    lua_pushvalue(L, -3);
+    lua_setfield(L, -2, "GLShaderKit");
+    lua_pop(L, 2);
+
+    return 1;
 }

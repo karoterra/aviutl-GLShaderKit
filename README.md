@@ -21,8 +21,15 @@
 2. [Releases](https://github.com/karoterra/aviutl-GLShaderKit/releases/)
    から最新版の ZIP ファイルをダウンロードしてください。
 3. ZIP ファイルを展開し、以下のファイルを適切な場所に配置してください。
-   - `GLShaderKit.dll`
-   - `GLShaderKit.ini`
+   - `GLShaderKit.auf` ： `aviutl.exe` と同じ場所か `plugins` フォルダに置いてください。
+   - `GLShaderKit.ini` ： `GLShaderKit.auf` と同じ場所に置いてください。
+   - `GLShaderKit.lua` ： `exedit.auf` と同じ場所か GLShaderKit を使用するスクリプトと同じ場所に置いてください。
+
+> [!NOTE]
+> `aviutl.exe` と `exedit.auf` を同じ場所に置いている場合はとりあえず `aviutl.exe` と同じ場所にすべて置けば動作します。
+
+> [!WARNING]
+> GLShaderKit v0.1.0 から更新する場合は `GLShaderKit.dll` と `GLShaderKit.ini` を削除してから導入してください。
 
 ## 使用例
 
@@ -301,6 +308,18 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 ```
 
+#### aviutl_exedit_sdk v1.2
+
+https://github.com/ePi5131/aviutl_exedit_sdk
+
+Copyright (c) 2022
+ePi All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+THIS SOFTWARE IS PROVIDED BY ePi “AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ePi BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #### LuaBinaries 5.1.4
 
 http://luabinaries.sourceforge.net/
@@ -316,6 +335,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ```
 
 ## 更新履歴
+
+### v0.2.0 (2024-08-18)
+- Radeon 環境だと AviUtl を閉じれないことがある問題を修正 ([#7](https://github.com/karoterra/aviutl-GLShaderKit/pull/7))
+  - dll から auf に変更
 
 ### v0.1.0 (2024-06-30)
 - 初版

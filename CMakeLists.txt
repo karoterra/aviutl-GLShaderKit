@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(aviutl_GLShaderKit
     LANGUAGES CXX C
-    VERSION 0.1.0
+    VERSION 0.2.0
 )
 
 # C++ の設定
@@ -94,6 +94,7 @@ add_custom_target(package
     COMMAND 7z a publish/${PROJECT_NAME}_v${PROJECT_VERSION}.zip
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
+        ${PROJECT_SOURCE_DIR}/src/GLShaderKit.lua
         README.md
         LICENSE
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

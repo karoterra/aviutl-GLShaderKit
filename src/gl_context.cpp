@@ -2,6 +2,8 @@
 
 #include <string>
 #include <stdexcept>
+#include <iostream>
+#include <format>
 
 #include "log.hpp"
 
@@ -10,6 +12,46 @@ namespace glshaderkit {
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     return DefWindowProcA(hwnd, msg, wp, lp);
 }
+
+#ifdef _DEBUG
+void GLAPIENTRY DebugOutputCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+    std::string sourceStr;
+    switch (source) {
+    case GL_DEBUG_SOURCE_API: sourceStr = "API"; break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM: sourceStr = "WINDOW_SYSTEM"; break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER: sourceStr = "SHADER_COMPILER"; break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY: sourceStr = "THIRD_PARTY"; break;
+    case GL_DEBUG_SOURCE_APPLICATION: sourceStr = "APPLICATION"; break;
+    case GL_DEBUG_SOURCE_OTHER: sourceStr = "OTHER"; break;
+    default: sourceStr = "unknown";
+    }
+
+    std::string typeStr;
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR: typeStr = "ERROR"; break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: typeStr = "DEPRECATED_BEHAVIOR"; break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: typeStr = "UNDEFINED_BEHAVIOR"; break;
+    case GL_DEBUG_TYPE_PORTABILITY: typeStr = "PORTABILITY"; break;
+    case GL_DEBUG_TYPE_PERFORMANCE: typeStr = "PERFORMANCE"; break;
+    case GL_DEBUG_TYPE_MARKER: typeStr = "MARKER"; break;
+    case GL_DEBUG_TYPE_PUSH_GROUP: typeStr = "PUSH_GROUP"; break;
+    case GL_DEBUG_TYPE_POP_GROUP: typeStr = "POP_GROUP"; break;
+    case GL_DEBUG_TYPE_OTHER: typeStr = "OTHER"; break;
+    default: typeStr = "unknown";
+    }
+
+    std::string severityStr;
+    switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH: severityStr = "HIGH"; break;
+    case GL_DEBUG_SEVERITY_MEDIUM: severityStr = "MEDIUM"; break;
+    case GL_DEBUG_SEVERITY_LOW: severityStr = "LOW"; break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION: severityStr = "NOTIFICATION"; break;
+    default: severityStr = "unknown";
+    }
+
+    std::cout << std::format("[GLShaderKit][GL]source: {}, type: {}, id: {}, severity: {}, message: {}", sourceStr, typeStr, id, severityStr, message) << std::endl;
+}
+#endif
 
 void GLContext::Initialize(const Config& config) {
     if (initialized_) {
@@ -20,7 +62,7 @@ void GLContext::Initialize(const Config& config) {
     WNDCLASS wc = {
         .style = CS_OWNDC,
         .lpfnWndProc = WndProc,
-        .hInstance = GetModuleHandleA(nullptr),
+        .hInstance = GetModuleHandleA("GLShaderKit.auf"),
         .lpszClassName = "DummyGLShaderKitWindow",
     };
     if (!RegisterClassA(&wc)) {
@@ -85,6 +127,9 @@ void GLContext::Initialize(const Config& config) {
     int attribs[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
         WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+#ifdef _DEBUG
+        WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+#endif
         0
     };
     hglrc_ = wglCreateContextAttribsARB(hdc_, NULL, attribs);
@@ -105,6 +150,12 @@ void GLContext::Initialize(const Config& config) {
         std::string msg = "GLのロードに失敗しました。" + Log::GetLastErrorMessage();
         throw std::runtime_error(msg);
     }
+
+#ifdef _DEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(DebugOutputCallback, nullptr);
+#endif
 
     fbo_.reset(new GLFramebuffer(100, 100));
     vertex_.reset(new GLVertex(1));

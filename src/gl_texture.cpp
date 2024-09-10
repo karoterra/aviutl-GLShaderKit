@@ -40,6 +40,14 @@ void GLTexture::Initialize(const void* data) {
     glTextureParameteri(texture_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTextureParameteri(texture_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTextureParameteri(texture_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // GPUへのアップロード完了待ち
+    GLsync sync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    GLenum waitResult = GL_UNSIGNALED;
+    while (waitResult != GL_ALREADY_SIGNALED && waitResult != GL_CONDITION_SATISFIED) {
+        waitResult = glClientWaitSync(sync, GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
+    }
+    glDeleteSync(sync);
 }
 
 void GLTexture::Release() {

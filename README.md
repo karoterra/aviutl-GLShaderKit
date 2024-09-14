@@ -324,6 +324,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## 更新履歴
 
+### v0.3.1 (2024-09-14)
+- 複数のテクスチャを使用する際に意図したテクスチャにならないことがある問題を修正 ([#11](https://github.com/karoterra/aviutl-GLShaderKit/pull/11))
+
 ### v0.3.0 (2024-08-18)
 - Radeon 環境だと AviUtl を閉じれないことがある問題を再修正 ([#8](https://github.com/karoterra/aviutl-GLShaderKit/pull/8))
   - auf から dll に戻した

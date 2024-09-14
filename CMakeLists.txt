@@ -73,6 +73,12 @@ add_custom_target(debug_deploy ALL
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_drawPoints.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effect.anm
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effectInstanced.anm
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.obj
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.frag
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.vert
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img0.png
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img1.png
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img2.png
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

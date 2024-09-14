@@ -129,3 +129,32 @@ GLShaderKit を利用したスクリプト、シェーダーのサンプルで�
 | 適用前                                                                                                                                            | 適用後                                                                                                                                           |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | ![GLShaderKit_effectInstanced で シェーダーとして GLShaderKit_effectInstanced_01 を使用する前の出力例](/assets/GLShaderKit_effectInstanced_01_before.webp) | ![GLShaderKit_effectInstanced で シェーダーとして GLShaderKit_effectInstanced_01 を使用した後の出力例](/assets/GLShaderKit_effectInstanced_01_after.webp) |
+
+## [GLShaderKit_multiTexture](GLShaderKit_multiTexture.obj)
+
+シェーダーで複数のテクスチャを使用するサンプルです。
+3枚の画像を加算合成します。
+
+- [頂点シェーダー](GLShaderKit_multiTexture.vert)
+- [フラグメントシェーダー](GLShaderKit_multiTexture.frag)
+
+<table>
+    <thead>
+        <tr><th>テクスチャ0</th><th>テクスチャ1</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td> <img src="GLShaderKit_multiTexture_img0.png"> </td>
+            <td> <img src="GLShaderKit_multiTexture_img1.png"> </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr><th>テクスチャ2</th><th>出力</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td> <img src="GLShaderKit_multiTexture_img2.png"> </td>
+            <td> <img src="../assets/GLShaderKit_multiTexture.png"> </td>
+        </tr>
+    </tbody>
+</table>

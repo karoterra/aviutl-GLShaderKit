@@ -1,0 +1,36 @@
+--[[
+    3枚の画像をテクスチャとしてGPUに転送し、シェーダーで加算合成
+]]
+
+local GLShaderKit = require "GLShaderKit"
+
+local shader_path = obj.getinfo("script_path") .. "multi-texture.frag"
+
+if GLShaderKit.isInitialized() then
+    GLShaderKit.activate()
+
+    GLShaderKit.setPlaneVertex(1)
+    GLShaderKit.setShader(shader_path, false)
+
+    -- テクスチャ0
+    obj.copybuffer("obj", "image:GLShaderKit_multiTexture_img0.png")
+    local data, w, h = obj.getpixeldata()
+    GLShaderKit.setTexture2D(0, data, w, h)
+
+    -- テクスチャ1
+    obj.copybuffer("obj", "image:GLShaderKit_multiTexture_img1.png")
+    data, w, h = obj.getpixeldata()
+    GLShaderKit.setTexture2D(1, data, w, h)
+
+    -- テクスチャ2
+    obj.copybuffer("obj", "image:GLShaderKit_multiTexture_img2.png")
+    data, w, h = obj.getpixeldata()
+    GLShaderKit.setTexture2D(2, data, w, h)
+
+    GLShaderKit.draw("TRIANGLES", data, w, h)
+
+    obj.putpixeldata(data)
+
+    GLShaderKit.deactivate()
+end
+

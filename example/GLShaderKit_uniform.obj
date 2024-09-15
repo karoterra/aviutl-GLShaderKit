@@ -1,0 +1,72 @@
+--[[
+    Uniform変数
+]]
+--track0:track0,0,10000,0
+--track1:track1,0,10000,0
+--track2:track2,0,10000,0
+--track3:track3,0,10000,0
+--check0:再読込,0
+
+local GLShaderKit = require "GLShaderKit"
+
+local width = 720
+local height = 720
+local shader_path = obj.getinfo("script_path") .. "GLShaderKit_uniform.frag"
+local force_reload = obj.check0
+
+local VERTEX_NUM = 1
+
+obj.setoption("drawtarget", "tempbuffer", width, height)
+obj.load("tempbuffer")
+local data, w, h = obj.getpixeldata()
+
+if GLShaderKit.isInitialized() then
+    GLShaderKit.activate()
+
+    GLShaderKit.setPlaneVertex(VERTEX_NUM)
+    GLShaderKit.setShader(shader_path, force_reload)
+
+    GLShaderKit.setFloat("resolution", width, height)
+    GLShaderKit.setFloat("time", obj.time)
+    GLShaderKit.setFloat("totalTime", obj.totaltime)
+    GLShaderKit.setInt("frame", obj.frame)
+    GLShaderKit.setInt("totalFrame", obj.totalframe)
+    GLShaderKit.setFloat("track", obj.track0, obj.track1, obj.track2, obj.track3)
+
+    GLShaderKit.setFloat("f1", 1.0)
+    GLShaderKit.setFloat("f2", 1.0, 0.0)
+    GLShaderKit.setFloat("f3", 0.5, 1.0, 0.5)
+    GLShaderKit.setFloat("f4", 1.0, 0.5, 0.5, 0.75)
+
+    GLShaderKit.setInt("i1", 255)
+    GLShaderKit.setInt("i2", 255, 0)
+    GLShaderKit.setInt("i3", 128, 255, 128)
+    GLShaderKit.setInt("i4", 255, 128, 128, 192)
+
+    GLShaderKit.setUInt("ui1", 255)
+    GLShaderKit.setUInt("ui2", 255, 0)
+    GLShaderKit.setUInt("ui3", 128, 255, 128)
+    GLShaderKit.setUInt("ui4", 255, 128, 128, 192)
+
+    GLShaderKit.setMatrix("m2", "2x2", false, {0.0, 0.3, 0.6, 1.0})
+    GLShaderKit.setMatrix("m2t", "2x2", true, {0.0, 0.3, 0.6, 1.0})
+    GLShaderKit.setMatrix("m3", "3x3", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0})
+    GLShaderKit.setMatrix("m4", "4x4", false, {
+        1.0, 0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0, 0.0,
+        1.0, 0.0, 1.0, 1.0,
+        1.0, 0.0, 1.0, 0.0
+    })
+    GLShaderKit.setMatrix("m2x3", "2x3", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0})
+    GLShaderKit.setMatrix("m3x2", "3x2", false, {0.0, 0.0, 1.0, 0.0, 1.0, 1.0})
+    GLShaderKit.setMatrix("m2x4", "2x4", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0})
+    GLShaderKit.setMatrix("m4x2", "4x2", false, {1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0})
+    GLShaderKit.setMatrix("m3x4", "3x4", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0})
+    GLShaderKit.setMatrix("m4x3", "4x3", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0})
+
+    GLShaderKit.draw("TRIANGLES", data, w, h)
+
+    GLShaderKit.deactivate()
+end
+
+obj.putpixeldata(data)

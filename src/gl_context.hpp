@@ -57,15 +57,7 @@ public:
     void SetShader(const std::string& path, bool forceReload);
     void Draw(GLenum mode, void* data, int width, int height, int instanceCount);
 
-    void SetFloat(const char* name, float v0);
-    void SetVec2(const char* name, float v0, float v1);
-    void SetVec3(const char* name, float v0, float v1, float v2);
-    void SetVec4(const char* name, float v0, float v1, float v2, float v3);
-
-    void SetInt(const char* name, int v0);
-    void SetIVec2(const char* name, int v0, int v1);
-    void SetIVec3(const char* name, int v0, int v1, int v2);
-    void SetIVec4(const char* name, int v0, int v1, int v2, int v3);
+    GLint GetUniformLocation(const char* name) const;
 
     void SetTexture2D(int unit, const void* data, int width, int height);
 

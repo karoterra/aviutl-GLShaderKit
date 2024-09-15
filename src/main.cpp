@@ -1,5 +1,6 @@
 #include <Windows.h>
 
+#include <vector>
 #include <string>
 #include <unordered_map>
 #include <filesystem>
@@ -19,6 +20,18 @@
 
 struct GLShaderKitModule {
 };
+
+std::vector<float> LuaTableToVector(lua_State* L, int index) {
+    std::vector<float> result;
+    lua_pushnil(L);
+    while (lua_next(L, index) != 0) {
+        if (lua_isnumber(L, -1)) {
+            result.push_back(static_cast<float>(lua_tonumber(L, -1)));
+        }
+        lua_pop(L, 1);
+    }
+    return result;
+}
 
 GLenum GetGLDrawMode(const std::string& modeStr) {
     static const std::unordered_map<std::string, GLenum> modeMap = {
@@ -140,18 +153,19 @@ int setFloat(lua_State* L) {
     }
     const char* name = lua_tostring(L, 1);
     auto& context = glshaderkit::GLContext::Instance();
+    auto location = context.GetUniformLocation(name);
     switch (top) {
     case 2:
-        context.SetFloat(name, lua_tonumber(L, 2));
+        glUniform1f(location, lua_tonumber(L, 2));
         break;
     case 3:
-        context.SetVec2(name, lua_tonumber(L, 2), lua_tonumber(L, 3));
+        glUniform2f(location, lua_tonumber(L, 2), lua_tonumber(L, 3));
         break;
     case 4:
-        context.SetVec3(name, lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+        glUniform3f(location, lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
         break;
     case 5:
-        context.SetVec4(name, lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
+        glUniform4f(location, lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5));
         break;
     }
     return 0;
@@ -164,19 +178,98 @@ int setInt(lua_State* L) {
     }
     const char* name = lua_tostring(L, 1);
     auto& context = glshaderkit::GLContext::Instance();
+    auto location = context.GetUniformLocation(name);
     switch (top) {
     case 2:
-        context.SetInt(name, lua_tointeger(L, 2));
+        glUniform1i(location, lua_tointeger(L, 2));
         break;
     case 3:
-        context.SetIVec2(name, lua_tointeger(L, 2), lua_tointeger(L, 3));
+        glUniform2i(location, lua_tointeger(L, 2), lua_tointeger(L, 3));
         break;
     case 4:
-        context.SetIVec3(name, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
+        glUniform3i(location, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
         break;
     case 5:
-        context.SetIVec4(name, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
+        glUniform4i(location, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
         break;
+    }
+    return 0;
+}
+
+int setUInt(lua_State* L) {
+    int top = lua_gettop(L);
+    if (top < 2) {
+        return luaL_error(L, "setUInt()には引数が2から5個の引数が必要です");
+    }
+    const char* name = lua_tostring(L, 1);
+    auto& context = glshaderkit::GLContext::Instance();
+    auto location = context.GetUniformLocation(name);
+    switch (top) {
+    case 2:
+        glUniform1ui(location, lua_tointeger(L, 2));
+        break;
+    case 3:
+        glUniform2ui(location, lua_tointeger(L, 2), lua_tointeger(L, 3));
+        break;
+    case 4:
+        glUniform3ui(location, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
+        break;
+    case 5:
+        glUniform4ui(location, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
+        break;
+    }
+    return 0;
+}
+
+int setMatrix(lua_State* L) {
+    int top = lua_gettop(L);
+
+    const char* name = lua_tostring(L, 1);
+    const char* matrixType = lua_tostring(L, 2);
+    const bool transpose = lua_toboolean(L, 3);
+    if (!lua_istable(L, 4)) {
+        return luaL_error(L, "第4引数には配列を指定してください");
+    }
+    auto matrix = LuaTableToVector(L, 4);
+
+    auto& context = glshaderkit::GLContext::Instance();
+    auto location = context.GetUniformLocation(name);
+
+    if (std::strcmp(matrixType, "2x2") == 0) {
+        if (matrix.size() != 4) return luaL_error(L, "配列の要素数が4ではありません");
+        glUniformMatrix2fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "3x3") == 0) {
+        if (matrix.size() != 9) return luaL_error(L, "配列の要素数が9ではありません");
+        glUniformMatrix3fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "4x4") == 0) {
+        if (matrix.size() != 16) return luaL_error(L, "配列の要素数が16ではありません");
+        glUniformMatrix4fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "2x3") == 0) {
+        if (matrix.size() != 6) return luaL_error(L, "配列の要素数が6ではありません");
+        glUniformMatrix2x3fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "3x2") == 0) {
+        if (matrix.size() != 6) return luaL_error(L, "配列の要素数が6ではありません");
+        glUniformMatrix3x2fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "2x4") == 0) {
+        if (matrix.size() != 8) return luaL_error(L, "配列の要素数が8ではありません");
+        glUniformMatrix2x4fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "4x2") == 0) {
+        if (matrix.size() != 8) return luaL_error(L, "配列の要素数が8ではありません");
+        glUniformMatrix4x2fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "3x4") == 0) {
+        if (matrix.size() != 12) return luaL_error(L, "配列の要素数が12ではありません");
+        glUniformMatrix3x4fv(location, 1, transpose, matrix.data());
+    }
+    else if (std::strcmp(matrixType, "4x3") == 0) {
+        if (matrix.size() != 12) return luaL_error(L, "配列の要素数が12ではありません");
+        glUniformMatrix4x3fv(location, 1, transpose, matrix.data());
     }
     return 0;
 }
@@ -214,6 +307,8 @@ static const luaL_Reg kLibFunctions[] = {
     {"draw", draw},
     {"setFloat", setFloat},
     {"setInt", setInt},
+    {"setUInt", setUInt},
+    {"setMatrix", setMatrix},
     {"setTexture2D", setTexture2D},
     {nullptr, nullptr},
 };

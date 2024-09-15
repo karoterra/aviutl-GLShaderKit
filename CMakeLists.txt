@@ -79,6 +79,9 @@ add_custom_target(debug_deploy ALL
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img0.png
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img1.png
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img2.png
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.obj
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.frag
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.vert
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

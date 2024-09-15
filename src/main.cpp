@@ -181,6 +181,30 @@ int setInt(lua_State* L) {
     return 0;
 }
 
+int setUInt(lua_State* L) {
+    int top = lua_gettop(L);
+    if (top < 2) {
+        return luaL_error(L, "setUInt()には引数が2から5個の引数が必要です");
+    }
+    const char* name = lua_tostring(L, 1);
+    auto& context = glshaderkit::GLContext::Instance();
+    switch (top) {
+    case 2:
+        context.SetUInt(name, lua_tointeger(L, 2));
+        break;
+    case 3:
+        context.SetUVec2(name, lua_tointeger(L, 2), lua_tointeger(L, 3));
+        break;
+    case 4:
+        context.SetUVec3(name, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4));
+        break;
+    case 5:
+        context.SetUVec4(name, lua_tointeger(L, 2), lua_tointeger(L, 3), lua_tointeger(L, 4), lua_tointeger(L, 5));
+        break;
+    }
+    return 0;
+}
+
 int setTexture2D(lua_State* L) {
     if (lua_gettop(L) < 4) {
         return luaL_error(L, "setTexture2D()には引数が4個必要です");
@@ -214,6 +238,7 @@ static const luaL_Reg kLibFunctions[] = {
     {"draw", draw},
     {"setFloat", setFloat},
     {"setInt", setInt},
+    {"setUInt", setUInt},
     {"setTexture2D", setTexture2D},
     {nullptr, nullptr},
 };

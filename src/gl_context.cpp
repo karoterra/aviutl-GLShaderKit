@@ -303,6 +303,34 @@ void GLContext::SetIVec4(const char* name, int v0, int v1, int v2, int v3) {
     }
 }
 
+void GLContext::SetUInt(const char* name, uint32_t v0) {
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform1ui(current->shader.GetUniformLocation(name), v0);
+    }
+}
+
+void GLContext::SetUVec2(const char* name, uint32_t v0, uint32_t v1) {
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform2ui(current->shader.GetUniformLocation(name), v0, v1);
+    }
+}
+
+void GLContext::SetUVec3(const char* name, uint32_t v0, uint32_t v1, uint32_t v2) {
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform3ui(current->shader.GetUniformLocation(name), v0, v1, v2);
+    }
+}
+
+void GLContext::SetUVec4(const char* name, uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3) {
+    auto current = shaderManager_.Current();
+    if (current) {
+        glUniform4ui(current->shader.GetUniformLocation(name), v0, v1, v2, v3);
+    }
+}
+
 void GLContext::SetTexture2D(int unit, const void* data, int width, int height) {
     textures_.emplace(data, width, height);
     textures_.top().Bind(unit);

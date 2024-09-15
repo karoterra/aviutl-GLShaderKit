@@ -67,6 +67,11 @@ public:
     void SetIVec3(const char* name, int v0, int v1, int v2);
     void SetIVec4(const char* name, int v0, int v1, int v2, int v3);
 
+    void SetUInt(const char* name, uint32_t v0);
+    void SetUVec2(const char* name, uint32_t v0, uint32_t v1);
+    void SetUVec3(const char* name, uint32_t v0, uint32_t v1, uint32_t v2);
+    void SetUVec4(const char* name, uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3);
+
     void SetTexture2D(int unit, const void* data, int width, int height);
 
     // GLの情報を取得

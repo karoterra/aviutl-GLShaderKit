@@ -247,87 +247,13 @@ void GLContext::Draw(GLenum mode, void* data, int width, int height, int instanc
     GLFramebuffer::Unbind();
 }
 
-void GLContext::SetFloat(const char* name, float v0) {
+GLint GLContext::GetUniformLocation(const char* name) const {
     auto current = shaderManager_.Current();
     if (current) {
-        glUniform1f(current->shader.GetUniformLocation(name), v0);
+        return current->shader.GetUniformLocation(name);
     }
-}
-
-void GLContext::SetVec2(const char* name, float v0, float v1) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform2f(current->shader.GetUniformLocation(name), v0, v1);
-    }
-}
-
-void GLContext::SetVec3(const char* name, float v0, float v1, float v2) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform3f(current->shader.GetUniformLocation(name), v0, v1, v2);
-    }
-}
-
-void GLContext::SetVec4(const char* name, float v0, float v1, float v2, float v3) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform4f(current->shader.GetUniformLocation(name), v0, v1, v2, v3);
-    }
-}
-
-void GLContext::SetInt(const char* name, int v0) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform1i(current->shader.GetUniformLocation(name), v0);
-    }
-}
-
-void GLContext::SetIVec2(const char* name, int v0, int v1) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform2i(current->shader.GetUniformLocation(name), v0, v1);
-    }
-}
-
-void GLContext::SetIVec3(const char* name, int v0, int v1, int v2) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform3i(current->shader.GetUniformLocation(name), v0, v1, v2);
-    }
-}
-
-void GLContext::SetIVec4(const char* name, int v0, int v1, int v2, int v3) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform4i(current->shader.GetUniformLocation(name), v0, v1, v2, v3);
-    }
-}
-
-void GLContext::SetUInt(const char* name, uint32_t v0) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform1ui(current->shader.GetUniformLocation(name), v0);
-    }
-}
-
-void GLContext::SetUVec2(const char* name, uint32_t v0, uint32_t v1) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform2ui(current->shader.GetUniformLocation(name), v0, v1);
-    }
-}
-
-void GLContext::SetUVec3(const char* name, uint32_t v0, uint32_t v1, uint32_t v2) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform3ui(current->shader.GetUniformLocation(name), v0, v1, v2);
-    }
-}
-
-void GLContext::SetUVec4(const char* name, uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3) {
-    auto current = shaderManager_.Current();
-    if (current) {
-        glUniform4ui(current->shader.GetUniformLocation(name), v0, v1, v2, v3);
+    else {
+        return -1;
     }
 }
 

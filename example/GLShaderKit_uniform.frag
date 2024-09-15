@@ -26,6 +26,17 @@ uniform uvec2 ui2;
 uniform uvec3 ui3;
 uniform uvec4 ui4;
 
+uniform mat2 m2;
+uniform mat2 m2t;
+uniform mat3 m3;
+uniform mat4 m4;
+uniform mat2x3 m2x3;
+uniform mat3x2 m3x2;
+uniform mat2x4 m2x4;
+uniform mat4x2 m4x2;
+uniform mat3x4 m3x4;
+uniform mat4x3 m4x3;
+
 const vec3 BLACK = vec3(0.0, 0.0, 0.0);
 const vec3 WHITE = vec3(1.0, 1.0, 1.0);
 const vec2 SQUARE_SIZE = vec2(0.1, 0.1);
@@ -115,6 +126,71 @@ void main() {
     color = mix(ui4.xyz / 255.0, color, step(0.0, sdBox(gridXY(p, vec2(3.0, 4.0)), SQUARE_SIZE)));
     // グリッド (4, 4) ui4.w
     color = mix(vec3(ui4.w) / 255.0, color, step(0.0, sdBox(gridXY(p, vec2(4.0, 4.0)), SQUARE_SIZE)));
+
+    // グリッド (0, 5) m2
+    color = mix(vec3(m2[0], 0.0), color, step(0.0, sdBox(gridXY(p, vec2(0.0, 5.0)), SQUARE_SIZE)));
+    // グリッド (1, 5) m2
+    color = mix(vec3(m2[1], 0.0), color, step(0.0, sdBox(gridXY(p, vec2(1.0, 5.0)), SQUARE_SIZE)));
+    // グリッド (2, 5) m2t
+    color = mix(vec3(m2t[0], 0.0), color, step(0.0, sdBox(gridXY(p, vec2(2.0, 5.0)), SQUARE_SIZE)));
+    // グリッド (3, 5) m2t
+    color = mix(vec3(m2t[1], 0.0), color, step(0.0, sdBox(gridXY(p, vec2(3.0, 5.0)), SQUARE_SIZE)));
+
+    // グリッド (0, 6) m3
+    color = mix(m3[0], color, step(0.0, sdBox(gridXY(p, vec2(0.0, 6.0)), SQUARE_SIZE)));
+    // グリッド (1, 6) m3
+    color = mix(m3[1], color, step(0.0, sdBox(gridXY(p, vec2(1.0, 6.0)), SQUARE_SIZE)));
+    // グリッド (2, 6) m3
+    color = mix(m3[2], color, step(0.0, sdBox(gridXY(p, vec2(2.0, 6.0)), SQUARE_SIZE)));
+
+    // グリッド (0, 7) m4
+    color = mix(vec3(m4[0].x, m4[0].y, m4[0].z), color, step(0.0, sdBox(gridXY(p, vec2(0.0, 7.0)), SQUARE_SIZE)));
+    // グリッド (1, 7) m4
+    color = mix(vec3(m4[0].w, m4[1].x, m4[1].y), color, step(0.0, sdBox(gridXY(p, vec2(1.0, 7.0)), SQUARE_SIZE)));
+    // グリッド (2, 7) m4
+    color = mix(vec3(m4[1].z, m4[1].w, m4[2].x), color, step(0.0, sdBox(gridXY(p, vec2(2.0, 7.0)), SQUARE_SIZE)));
+    // グリッド (3, 7) m4
+    color = mix(vec3(m4[2].y, m4[2].z, m4[2].w), color, step(0.0, sdBox(gridXY(p, vec2(3.0, 7.0)), SQUARE_SIZE)));
+    // グリッド (4, 7) m4
+    color = mix(vec3(m4[3].x, m4[3].y, m4[3].z), color, step(0.0, sdBox(gridXY(p, vec2(4.0, 7.0)), SQUARE_SIZE)));
+
+    // グリッド (0, 8) m2x3
+    color = mix(m2x3[0].xyz, color, step(0.0, sdBox(gridXY(p, vec2(0.0, 8.0)), SQUARE_SIZE)));
+    // グリッド (1, 8) m2x3
+    color = mix(m2x3[1].xyz, color, step(0.0, sdBox(gridXY(p, vec2(1.0, 8.0)), SQUARE_SIZE)));
+    // グリッド (2, 8) m3x2
+    color = mix(vec3(m3x2[0].xy, m3x2[1].x), color, step(0.0, sdBox(gridXY(p, vec2(2.0, 8.0)), SQUARE_SIZE)));
+    // グリッド (3, 8) m3x2
+    color = mix(vec3(m3x2[1].y, m3x2[2].xy), color, step(0.0, sdBox(gridXY(p, vec2(3.0, 8.0)), SQUARE_SIZE)));
+
+    // グリッド (0, 9) m2x4
+    color = mix(vec3(m2x4[0].x, m2x4[0].y, m2x4[0].z), color, step(0.0, sdBox(gridXY(p, vec2(0.0, 9.0)), SQUARE_SIZE)));
+    // グリッド (1, 9) m2x4
+    color = mix(vec3(m2x4[0].w, m2x4[1].x, m2x4[1].y), color, step(0.0, sdBox(gridXY(p, vec2(1.0, 9.0)), SQUARE_SIZE)));
+    // グリッド (2, 9) m2x4, m4x2
+    color = mix(vec3(m2x4[1].z, m2x4[1].w, m4x2[0].x), color, step(0.0, sdBox(gridXY(p, vec2(2.0, 9.0)), SQUARE_SIZE)));
+    // グリッド (3, 9) m4x2
+    color = mix(vec3(m4x2[0].y, m4x2[1].x, m4x2[1].y), color, step(0.0, sdBox(gridXY(p, vec2(3.0, 9.0)), SQUARE_SIZE)));
+    // グリッド (4, 9) m4x2
+    color = mix(vec3(m4x2[2].x, m4x2[2].y, m4x2[3].x), color, step(0.0, sdBox(gridXY(p, vec2(4.0, 9.0)), SQUARE_SIZE)));
+
+    // グリッド (5, 0) m3x4
+    color = mix(vec3(m3x4[0].x, m3x4[0].y, m3x4[0].z), color, step(0.0, sdBox(gridXY(p, vec2(5.0, 0.0)), SQUARE_SIZE)));
+    // グリッド (6, 0) m3x4
+    color = mix(vec3(m3x4[0].w, m3x4[1].x, m3x4[1].y), color, step(0.0, sdBox(gridXY(p, vec2(6.0, 0.0)), SQUARE_SIZE)));
+    // グリッド (7, 0) m3x4
+    color = mix(vec3(m3x4[1].z, m3x4[1].w, m3x4[2].x), color, step(0.0, sdBox(gridXY(p, vec2(7.0, 0.0)), SQUARE_SIZE)));
+    // グリッド (8, 0) m3x4
+    color = mix(vec3(m3x4[2].y, m3x4[2].z, m3x4[2].w), color, step(0.0, sdBox(gridXY(p, vec2(8.0, 0.0)), SQUARE_SIZE)));
+
+    // グリッド (5, 1) m4x3
+    color = mix(m4x3[0].xyz, color, step(0.0, sdBox(gridXY(p, vec2(5.0, 1.0)), SQUARE_SIZE)));
+    // グリッド (6, 1) m4x3
+    color = mix(m4x3[1].xyz, color, step(0.0, sdBox(gridXY(p, vec2(6.0, 1.0)), SQUARE_SIZE)));
+    // グリッド (7, 1) m4x3
+    color = mix(m4x3[2].xyz, color, step(0.0, sdBox(gridXY(p, vec2(7.0, 1.0)), SQUARE_SIZE)));
+    // グリッド (8, 1) m4x3
+    color = mix(m4x3[3].xyz, color, step(0.0, sdBox(gridXY(p, vec2(8.0, 1.0)), SQUARE_SIZE)));
 
     // グリッド (10x10)
     color = mix(vec3(0.5, 0.5, 0.5), color, step(0.0, sdHLine(fract(p * 5.0), 0.05)));

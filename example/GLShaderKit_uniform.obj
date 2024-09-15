@@ -48,6 +48,22 @@ if GLShaderKit.isInitialized() then
     GLShaderKit.setUInt("ui3", 128, 255, 128)
     GLShaderKit.setUInt("ui4", 255, 128, 128, 192)
 
+    GLShaderKit.setMatrix("m2", "2x2", false, {0.0, 0.3, 0.6, 1.0})
+    GLShaderKit.setMatrix("m2t", "2x2", true, {0.0, 0.3, 0.6, 1.0})
+    GLShaderKit.setMatrix("m3", "3x3", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0})
+    GLShaderKit.setMatrix("m4", "4x4", false, {
+        1.0, 0.0, 0.0, 0.0,
+        1.0, 0.0, 0.0, 0.0,
+        1.0, 0.0, 1.0, 1.0,
+        1.0, 0.0, 1.0, 0.0
+    })
+    GLShaderKit.setMatrix("m2x3", "2x3", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0})
+    GLShaderKit.setMatrix("m3x2", "3x2", false, {0.0, 0.0, 1.0, 0.0, 1.0, 1.0})
+    GLShaderKit.setMatrix("m2x4", "2x4", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0})
+    GLShaderKit.setMatrix("m4x2", "4x2", false, {1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0})
+    GLShaderKit.setMatrix("m3x4", "3x4", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0})
+    GLShaderKit.setMatrix("m4x3", "4x3", false, {1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0})
+
     GLShaderKit.draw("TRIANGLES", data, w, h)
 
     GLShaderKit.deactivate()

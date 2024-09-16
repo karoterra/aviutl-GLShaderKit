@@ -34,7 +34,7 @@ private:
     static std::string LoadShaderSource(const std::filesystem::path& basePath);
     static GLuint CompileShader(const char* source, GLenum type);
 
-    void AttachShaderIfExists(const std::filesystem::path& path, GLenum type);
+    void AttachShaderIfExists(const std::filesystem::path& path, GLenum type, const char* defaultSource = nullptr);
 
     void Release();
 

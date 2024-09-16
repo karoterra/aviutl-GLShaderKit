@@ -14,12 +14,26 @@ namespace glshaderkit {
 
 namespace fs = std::filesystem;
 
+const char* kDefaultVertexShaderSource = R"(
+#version 460 core
+
+layout(location = 0) in vec3 iPos;
+layout(location = 1) in vec2 iTexCoord;
+
+out vec2 TexCoord;
+
+void main() {
+    gl_Position = vec4(iPos, 1.0);
+    TexCoord = iTexCoord;
+}
+)";
+
 GLShader::GLShader(const std::string& basePath) : program_(0) {
     program_ = glCreateProgram();
 
     try {
         fs::path p = basePath;
-        AttachShaderIfExists(p.replace_extension(".vert"), GL_VERTEX_SHADER);
+        AttachShaderIfExists(p.replace_extension(".vert"), GL_VERTEX_SHADER, kDefaultVertexShaderSource);
         AttachShaderIfExists(p.replace_extension(".frag"), GL_FRAGMENT_SHADER);
         AttachShaderIfExists(p.replace_extension(".tesc"), GL_TESS_CONTROL_SHADER);
         AttachShaderIfExists(p.replace_extension(".tese"), GL_TESS_EVALUATION_SHADER);
@@ -95,13 +109,22 @@ GLuint GLShader::CompileShader(const char* source, GLenum type) {
     return shader;
 }
 
-void GLShader::AttachShaderIfExists(const std::filesystem::path& path, GLenum type) {
-    if (!fs::exists(path)) {
+void GLShader::AttachShaderIfExists(const std::filesystem::path& path, GLenum type, const char* defaultSource) {
+    GLuint shader;
+
+    if (fs::exists(path)) {
+        Log::Info("シェーダーをコンパイルします: " + path.string());
+        std::string source = LoadShaderSource(path);
+        shader = CompileShader(source.c_str(), type);
+    }
+    else if (defaultSource != nullptr) {
+        Log::Info("シェーダー '" + path.string() + "'が見つからなかったため、デフォルトシェーダーを使用します。");
+        shader = CompileShader(defaultSource, type);
+    }
+    else {
         return;
     }
-    Log::Info("シェーダーをコンパイルします: " + path.string());
-    std::string source = LoadShaderSource(path);
-    GLuint shader = CompileShader(source.c_str(), type);
+
     glAttachShader(program_, shader);
     glDeleteShader(shader);
 }

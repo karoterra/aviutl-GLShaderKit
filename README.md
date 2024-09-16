@@ -154,6 +154,21 @@ n 個の点群を表す頂点配列オブジェクトを利用可能にする。
 指定したシェーダーのソースファイルをコンパイル・リンクして利用可能な状態にする。
 引数で指定するファイルは1個だけだが、ファイル名が同じで拡張子が対応しているファイルが見つかれば自動で読み込まれる。
 
+頂点シェーダーが見つからない場合は以下のデフォルト頂点シェーダーが使用される。
+```glsl
+#version 460 core
+
+layout(location = 0) in vec3 iPos;
+layout(location = 1) in vec2 iTexCoord;
+
+out vec2 TexCoord;
+
+void main() {
+    gl_Position = vec4(iPos, 1.0);
+    TexCoord = iTexCoord;
+}
+```
+
 シェーダープログラムのコンパイル・リンク時にエラーがあった場合はコンソールウィンドウにエラーメッセージが表示される。
 
 コンパイル・リンクされたシェーダープログラムは一定個数キャッシュされる。
@@ -210,6 +225,41 @@ n 個の点群を表す頂点配列オブジェクトを利用可能にする。
 | y    | int    | 値2                    |
 | x    | int    | 値3                    |
 | w    | int    | 値4                    |
+
+#### 戻り値
+なし
+
+### `setUInt(name, x [, y [, z [, w]]])`
+ユニフォーム変数を設定する。
+
+引数に渡した個数に応じて `uint`, `uvec2`, `uvec3`, `uvec4` 型の値を設定する。
+
+`setShader` の後に実行すること。
+
+#### 引数
+| 名前 | 型     | 説明                   |
+| ---- | ------ | ---------------------- |
+| name | string | ユニフォーム変数の名前 |
+| x    | uint   | 値1                    |
+| y    | uint   | 値2                    |
+| x    | uint   | 値3                    |
+| w    | uint   | 値4                    |
+
+#### 戻り値
+なし
+
+### `setMatrix(name, type, transpose, value)`
+行列のユニフォーム変数を設定する。
+
+`setShader` の後に実行すること。
+
+#### 引数
+| 名前      | 型      | 説明                                                                     |
+| --------- | ------- | ------------------------------------------------------------------------ |
+| name      | string  | ユニフォーム変数の名前                                                   |
+| type      | string  | 行列の形 (`2x2`, `3x3`, `4x4`, `2x3`, `3x2`, `2x4`, `4x2`, `3x4`, `4x3`) |
+| transpose | boolean | `true` なら転置する                                                      |
+| value     | array   | 行列の各要素の値。要素数は行列の要素数とあわせること                     |
 
 #### 戻り値
 なし
@@ -323,6 +373,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ```
 
 ## 更新履歴
+
+### v0.4.0 (2024-09-16)
+- `setUInt`, `setMatrix` の追加 ([#13](https://github.com/karoterra/aviutl-GLShaderKit/pull/13))
+- デフォルト頂点シェーダーの追加 ([#14](https://github.com/karoterra/aviutl-GLShaderKit/pull/14))
 
 ### v0.3.1 (2024-09-14)
 - 複数のテクスチャを使用する際に意図したテクスチャにならないことがある問題を修正 ([#11](https://github.com/karoterra/aviutl-GLShaderKit/pull/11))

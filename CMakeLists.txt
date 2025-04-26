@@ -5,10 +5,15 @@ project(aviutl_GLShaderKit
     VERSION 0.4.0
 )
 
+enable_testing()
+
 # C++ の設定
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# GoogleTest
+find_package(GTest CONFIG REQUIRED)
 
 # Lua 5.1.4
 set(LUA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/vendor/lua/include)
@@ -62,6 +67,33 @@ target_compile_definitions(GLShaderKit
         NOMINMAX
 )
 
+# テスト用実行ファイル
+add_executable(GLShaderKit_test
+    tests/test_config.cpp
+)
+target_include_directories(GLShaderKit_test PUBLIC src)
+target_link_libraries(GLShaderKit_test
+    PRIVATE
+        GTest::gtest_main
+)
+target_compile_options(GLShaderKit_test
+    PRIVATE
+        "$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>"
+        "$<$<CXX_COMPILER_ID:MSVC>:/execution-charset:shift_jis>"
+)
+target_compile_definitions(GLShaderKit_test
+    PRIVATE
+        GL_SHADER_KIT_VERSION="${PROJECT_VERSION}"
+        NOMINMAX
+)
+
+# テストデータ
+add_custom_command(TARGET GLShaderKit_test PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/tests/data
+        ${CMAKE_BINARY_DIR}/data
+)
+
 # 検証用の AviUtl に配置
 add_custom_target(debug_deploy ALL
     ${CMAKE_COMMAND} -E make_directory ${AVIUTL_DIR}/script/GLShaderKit
@@ -99,3 +131,8 @@ add_custom_target(package
     DEPENDS GLShaderKit
     COMMENT "package -> publish/${PROJECT_NAME}_v${PROJECT_VERSION}.zip"
 )
+
+# CTest
+include(CTest)
+include(GoogleTest)
+gtest_discover_tests(GLShaderKit_test)

@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include "gl_context.hpp"
+#include "lua_helper.hpp"
+
 namespace glshaderkit {
 
 GLVertex::GLVertex(int n) : vao_(0), vbo_(0), ibo_(0), primitive_(Primitive::Plane), size_(0), indexCount_(0) {
@@ -9,6 +12,20 @@ GLVertex::GLVertex(int n) : vao_(0), vbo_(0), ibo_(0), primitive_(Primitive::Pla
         n = 1;
     }
     Initialize(n);
+}
+
+GLVertex::GLVertex(Primitive primitive, int n)
+    : vao_(0), vbo_(0), ibo_(0)
+    , primitive_(primitive), size_(0), indexCount_(0)
+{
+    switch (primitive) {
+    case Primitive::Plane:
+        SetPlane(n);
+        break;
+    case Primitive::Points:
+        SetPoints(n);
+        break;
+    }
 }
 
 GLVertex::GLVertex(GLVertex&& other)
@@ -176,5 +193,90 @@ void GLVertex::Release() {
     size_ = 0;
     indexCount_ = 0;
 }
+
+namespace lua {
+
+void RegisterVertex(lua_State* L) {
+    const luaL_Reg metaMethod[] = {
+        {"__gc", VertexMetaGC},
+        {nullptr, nullptr},
+    };
+    const luaL_Reg method[] = {
+        {"bind", VertexBind},
+        {"unbind", VertexUnbind},
+        {"draw", VertexDraw},
+        {"release", VertexRelease},
+        {nullptr, nullptr},
+    };
+
+    RegisterMetaTable(L, kVertexMetaName, metaMethod, method);
+}
+
+int CreateVertex(lua_State* L) {
+    const char* types[] = {"PLANE", "POINTS", nullptr};
+    const GLVertex::Primitive primitives[] = {
+        GLVertex::Primitive::Plane,
+        GLVertex::Primitive::Points,
+    };
+    auto primitive = primitives[luaL_checkoption(L, 1, "PLANE", types)];
+    int n = luaL_checkinteger(L, 2);
+    GLVertex* vao = new GLVertex(primitive, n);
+    GLContext::Instance().GetReleaseContainer().Add(vao);
+
+    GLVertex** udata = static_cast<GLVertex**>(lua_newuserdata(L, sizeof(GLVertex*)));
+    *udata = vao;
+    luaL_getmetatable(L, kVertexMetaName);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+int VertexMetaGC(lua_State* L) {
+    GLVertex* self = GetLuaVertex(L, 1);
+    GLContext::Instance().GetReleaseContainer().Remove(self);
+    delete self;
+    return 0;
+}
+
+int VertexBind(lua_State* L) {
+    GLVertex* self = GetLuaVertex(L, 1);
+    self->Bind();
+    return 0;
+}
+
+int VertexUnbind(lua_State* L) {
+    GLVertex::Unbind();
+    return 0;
+}
+
+int VertexDraw(lua_State* L) {
+    GLVertex* self = GetLuaVertex(L, 1);
+    GLenum mode = CheckDrawMode(L, 2);
+    GLFramebuffer* fbo = GetLuaFrameBuffer(L, 3);
+    int instanceCount = luaL_optinteger(L, 4, 1);
+
+    self->Bind();
+    fbo->Bind();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    switch (self->GetPrimitive()) {
+    case GLVertex::Primitive::Plane:
+        glDrawElementsInstanced(mode, self->IndexCount(), GL_UNSIGNED_INT, nullptr, instanceCount);
+        break;
+    case GLVertex::Primitive::Points:
+        glDrawArraysInstanced(mode, 0, self->Size(), instanceCount);
+        break;
+    }
+
+    return 0;
+}
+
+int VertexRelease(lua_State* L) {
+    GLVertex* self = GetLuaVertex(L, 1);
+    self->Release();
+    return 0;
+}
+
+} // namespace lua
 
 } // namespace glshaderkit

@@ -29,24 +29,19 @@ set(AVIUTL_DIR ${PROJECT_SOURCE_DIR}/bin/aviutl)
 # GLShaderKit.dll
 add_library(GLShaderKit SHARED
     src/main.cpp
-    src/log.hpp
-    src/config.hpp
-    src/gl_context.hpp
+    src/release.cpp
+    src/lua_helper.cpp
     src/gl_context.cpp
-    src/gl_shader.hpp
     src/gl_shader.cpp
-    src/gl_shader_manager.hpp
-    src/gl_framebuffer.hpp
     src/gl_framebuffer.cpp
-    src/gl_vertex.hpp
     src/gl_vertex.cpp
-    src/gl_texture.hpp
     src/gl_texture.cpp
     ${GLAD_SOURCE_DIR}/gl.c
     ${GLAD_SOURCE_DIR}/wgl.c
 )
 target_include_directories(GLShaderKit
     PRIVATE
+        src
         ${LUA_INCLUDE_DIR}
         ${GLAD_INCLUDE_DIR}
 )
@@ -70,11 +65,13 @@ target_compile_definitions(GLShaderKit
 # テスト用実行ファイル
 add_executable(GLShaderKit_test
     tests/test_config.cpp
+    tests/test_release.cpp
+    src/release.cpp
 )
 target_include_directories(GLShaderKit_test PUBLIC src)
 target_link_libraries(GLShaderKit_test
     PRIVATE
-        GTest::gtest_main
+        GTest::gmock_main
 )
 target_compile_options(GLShaderKit_test
     PRIVATE
@@ -114,6 +111,8 @@ add_custom_target(debug_deploy ALL
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.frag
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.vert
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_gaussianBlur.anm
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_gaussianBlur.frag
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

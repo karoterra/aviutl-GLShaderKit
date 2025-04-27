@@ -9,6 +9,10 @@
 #include <lua.hpp>
 
 #include "gl_context.hpp"
+#include "gl_texture.hpp"
+#include "gl_framebuffer.hpp"
+#include "gl_vertex.hpp"
+#include "lua_helper.hpp"
 #include "config.hpp"
 #include "log.hpp"
 
@@ -17,9 +21,6 @@
 #ifndef GL_SHADER_KIT_VERSION
 #   define GL_SHADER_KIT_VERSION "0.0.0"
 #endif
-
-struct GLShaderKitModule {
-};
 
 std::vector<float> LuaTableToVector(lua_State* L, int index) {
     std::vector<float> result;
@@ -31,31 +32,6 @@ std::vector<float> LuaTableToVector(lua_State* L, int index) {
         lua_pop(L, 1);
     }
     return result;
-}
-
-GLenum GetGLDrawMode(const std::string& modeStr) {
-    static const std::unordered_map<std::string, GLenum> modeMap = {
-        {"POINTS", GL_POINTS},
-        {"LINE_STRIP", GL_LINE_STRIP},
-        {"LINE_LOOP", GL_LINE_LOOP},
-        {"LINES", GL_LINES},
-        {"LINE_STRIP_ADJACENCY", GL_LINE_STRIP_ADJACENCY},
-        {"LINES_ADJACENCY", GL_LINES_ADJACENCY},
-        {"TRIANGLE_STRIP", GL_TRIANGLE_STRIP},
-        {"TRIANGLE_FAN", GL_TRIANGLE_FAN},
-        {"TRIANGLES", GL_TRIANGLES},
-        {"TRIANGLE_STRIP_ADJACENCY", GL_TRIANGLE_STRIP_ADJACENCY},
-        {"TRIANGLES_ADJACENCY", GL_TRIANGLES_ADJACENCY},
-        {"PATCHES", GL_PATCHES},
-    };
-
-    auto it = modeMap.find(modeStr);
-    if (it != modeMap.end()) {
-        return it->second;
-    }
-    else {
-        return GL_TRIANGLES;
-    }
 }
 
 int version(lua_State* L) {
@@ -135,13 +111,12 @@ int draw(lua_State* L) {
     if (lua_gettop(L) < 4) {
         return luaL_error(L, "draw()には引数が4個必要です");
     }
-    const char* modeStr = luaL_checkstring(L, 1);
+    GLenum mode = glshaderkit::lua::CheckDrawMode(L, 1);
     void* data = lua_touserdata(L, 2);
     int w = lua_tointeger(L, 3);
     int h = lua_tointeger(L, 4);
     int instanceCount = lua_tointeger(L, 5);
 
-    GLenum mode = GetGLDrawMode(modeStr);
     glshaderkit::GLContext::Instance().Draw(mode, data, w, h, instanceCount);
     return 0;
 }
@@ -310,6 +285,9 @@ static const luaL_Reg kLibFunctions[] = {
     {"setUInt", setUInt},
     {"setMatrix", setMatrix},
     {"setTexture2D", setTexture2D},
+    {"createTexture", glshaderkit::lua::CreateTexture},
+    {"createFrameBuffer", glshaderkit::lua::CreateFrameBuffer},
+    {"createVertex", glshaderkit::lua::CreateVertex},
     {nullptr, nullptr},
 };
 
@@ -341,32 +319,24 @@ GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
         context.Release();
     }
 
-    // モジュールオブジェクト作成
-    void* ud = lua_newuserdata(L, sizeof(GLShaderKitModule));
+    // クラスのメタテーブル登録
+    glshaderkit::lua::RegisterTexture(L);
+    glshaderkit::lua::RegisterFrameBuffer(L);
+    glshaderkit::lua::RegisterVertex(L);
+
+    // Luaステートが閉じるときにGLコンテキストを解放させる
+    void* ud = lua_newuserdata(L, 1);
     if (!ud) {
         return luaL_error(L, "lua_newuserdata failed");
     }
-
-    // メタテーブルを作成
-    luaL_newmetatable(L, "GLShaderKit_Meta");
-    // メタテーブルに関数テーブル登録
-    lua_newtable(L);
-    luaL_register(L, nullptr, kLibFunctions);
-    lua_setfield(L, -2, "__index");
-    // メタテーブルに __gc メソッド登録
+    luaL_newmetatable(L, "GLShaderKit.GC");
     lua_pushcfunction(L, glshaderkit_gc);
     lua_setfield(L, -2, "__gc");
-    // メタテーブルをモジュールオブジェクトに関連付ける
     lua_setmetatable(L, -2);
+    lua_setfield(L, LUA_REGISTRYINDEX, "GLShaderKit.GCHandle");
 
-    // モジュール登録
-    lua_pushvalue(L, -1);
-    lua_setglobal(L, "GLShaderKit");
-    lua_getglobal(L, "package");
-    lua_getfield(L, -1, "loaded");
-    lua_pushvalue(L, -3);
-    lua_setfield(L, -2, "GLShaderKit");
-    lua_pop(L, 2);
+    // モジュールメソッド登録
+    luaL_register(L, "GLShaderKit", kLibFunctions);
 
     return 1;
 }

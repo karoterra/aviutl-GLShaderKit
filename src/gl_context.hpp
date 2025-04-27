@@ -14,6 +14,7 @@
 #include "gl_shader.hpp"
 #include "gl_shader_manager.hpp"
 #include "gl_texture.hpp"
+#include "release.hpp"
 #include "config.hpp"
 #include "log.hpp"
 
@@ -49,6 +50,7 @@ public:
 
     // レンダリングコンテキストを無効化する
     void Deactivate() {
+        releaseContainer_.ReleaseAll();
         wglMakeCurrent(NULL, NULL);
     }
 
@@ -71,6 +73,10 @@ public:
             return "";
         }
         return reinterpret_cast<const char*>(str);
+    }
+
+    ReleaseContainer& GetReleaseContainer() {
+        return releaseContainer_;
     }
 
 private:
@@ -104,6 +110,7 @@ private:
     std::unique_ptr<GLVertex> vertex_;
     GLShaderManager shaderManager_;
     std::stack<GLTexture> textures_;
+    ReleaseContainer releaseContainer_;
 };
 
 } // namespace glshaderkit

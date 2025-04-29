@@ -2,6 +2,8 @@
 
 #include <glad/gl.h>
 
+#include "gl_context.hpp"
+#include "lua_helper.hpp"
 #include "log.hpp"
 
 namespace glshaderkit {
@@ -51,6 +53,8 @@ void GLFramebuffer::Initialize() {
     glTextureStorage2D(texture_, 1, GL_RGBA8, width_, height_);
     glTextureParameteri(texture_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTextureParameteri(texture_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(texture_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(texture_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // フレームバッファにテクスチャをアタッチ
     glNamedFramebufferTexture(fbo_, GL_COLOR_ATTACHMENT0, texture_, 0);
@@ -70,5 +74,79 @@ void GLFramebuffer::Release() {
         texture_ = 0;
     }
 }
+
+namespace lua {
+
+void RegisterFrameBuffer(lua_State* L) {
+    const luaL_Reg metaMethod[] = {
+        {"__gc", FrameBufferMetaGC},
+        {nullptr, nullptr},
+    };
+    const luaL_Reg method[] = {
+        {"bind", FrameBufferBind},
+        {"unbind", FrameBufferUnbind},
+        {"bindTexture", FrameBufferBindTexture},
+        {"readPixels", FrameBufferReadPixels},
+        {"release", FrameBufferRelease},
+        {nullptr, nullptr},
+    };
+
+    RegisterMetaTable(L, kFrameBufferMetaName, metaMethod, method);
+}
+
+int CreateFrameBuffer(lua_State* L) {
+    int width = luaL_checkinteger(L, 1);
+    int height = luaL_checkinteger(L, 2);
+    GLFramebuffer* fbo = new GLFramebuffer(width, height);
+    GLContext::Instance().GetReleaseContainer().Add(fbo);
+
+    GLFramebuffer** udata = static_cast<GLFramebuffer**>(lua_newuserdata(L, sizeof(GLFramebuffer*)));
+    *udata = fbo;
+    luaL_getmetatable(L, kFrameBufferMetaName);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+int FrameBufferMetaGC(lua_State* L) {
+    GLFramebuffer* self = GetLuaFrameBuffer(L, 1);
+    GLContext::Instance().GetReleaseContainer().Remove(self);
+    delete self;
+    return 0;
+}
+
+int FrameBufferBind(lua_State* L) {
+    GLFramebuffer* self = GetLuaFrameBuffer(L, 1);
+    self->Bind();
+    return 0;
+}
+
+int FrameBufferUnbind(lua_State* L) {
+    GLFramebuffer::Unbind();
+    return 0;
+}
+
+int FrameBufferBindTexture(lua_State* L) {
+    GLFramebuffer* self = GetLuaFrameBuffer(L, 1);
+    int unit = luaL_checkinteger(L, 2);
+    self->BindTexture(unit);
+    return 0;
+}
+
+int FrameBufferReadPixels(lua_State* L) {
+    GLFramebuffer* self = GetLuaFrameBuffer(L, 1);
+    void* data = lua_touserdata(L, 2);
+    self->Bind();
+    glReadPixels(0, 0, self->Width(), self->Height(), GL_BGRA, GL_UNSIGNED_BYTE, data);
+    return 0;
+}
+
+int FrameBufferRelease(lua_State* L) {
+    GLFramebuffer* self = GetLuaFrameBuffer(L, 1);
+    self->Release();
+    return 0;
+}
+
+} // namespace lua
+
 
 } // namespace glshaderkit

@@ -195,6 +195,19 @@ void GLContext::Release() {
     initialized_ = false;
 }
 
+bool GLContext::Activate() {
+    if (!initialized_) {
+        return false;
+    }
+    return wglMakeCurrent(hdc_, hglrc_);
+}
+
+void GLContext::Deactivate() {
+    releaseContainer_.ReleaseAll();
+    shaderManager_.CacheActiveShaders();
+    wglMakeCurrent(NULL, NULL);
+}
+
 void GLContext::SetPlaneVertex(int n) {
     vertex_->SetPlane(n);
 }
@@ -209,8 +222,8 @@ void GLContext::SetShader(const std::string& path, bool forceReload) {
     }
 
     try {
-        GLShader& shader = shaderManager_.Get(path, forceReload);
-        shader.Use();
+        shaderManager_.SetShader(path, forceReload);
+        shaderManager_.Current()->get().Use();
     }
     catch (const std::runtime_error& e) {
         Log::Error(e.what());
@@ -250,7 +263,7 @@ void GLContext::Draw(GLenum mode, void* data, int width, int height, int instanc
 GLint GLContext::GetUniformLocation(const char* name) const {
     auto current = shaderManager_.Current();
     if (current) {
-        return current->shader.GetUniformLocation(name);
+        return current->get().GetUniformLocation(name);
     }
     else {
         return -1;

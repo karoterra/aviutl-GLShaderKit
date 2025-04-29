@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <stdexcept>
 
+#include "gl_context.hpp"
+#include "lua_helper.hpp"
 #include "log.hpp"
 
 namespace glshaderkit {
@@ -135,5 +137,71 @@ void GLShader::Release() {
         program_ = 0;
     }
 }
+
+namespace lua {
+
+void RegisterProgram(lua_State* L) {
+    const luaL_Reg metaMethod[] = {
+        {nullptr, nullptr},
+    };
+    const luaL_Reg method[] = {
+        {"use", ProgramUse},
+        {"setFloat", ProgramSetFloat},
+        {"setInt", ProgramSetInt},
+        {"setUInt", ProgramSetUInt},
+        {"setMatrix", ProgramSetMatrix},
+        {nullptr, nullptr},
+    };
+
+    RegisterMetaTable(L, kProgramMetaName, metaMethod, method);
+}
+
+int CreateProgram(lua_State* L) {
+    const char* path = luaL_checkstring(L, 1);
+    const bool force = lua_toboolean(L, 2);
+    auto shader = GLContext::Instance().GetShaderManager().CreateProgram(path, force);
+
+    GLShader** udata = static_cast<GLShader**>(lua_newuserdata(L, sizeof(GLShader*)));
+    *udata = &shader.get();
+    luaL_getmetatable(L, kProgramMetaName);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+int ProgramUse(lua_State* L) {
+    GLShader* self = GetLuaProgram(L, 1);
+    self->Use();
+    return 0;
+}
+
+int ProgramSetFloat(lua_State* L) {
+    GLShader* self = GetLuaProgram(L, 1);
+    const char* name = luaL_checkstring(L, 2);
+    auto location = self->GetUniformLocation(name);
+    return SetUniform<GLfloat>(L, location, 2, LuaToFloat, kGLUniformFloatSetter);
+}
+
+int ProgramSetInt(lua_State* L) {
+    GLShader* self = GetLuaProgram(L, 1);
+    const char* name = luaL_checkstring(L, 2);
+    auto location = self->GetUniformLocation(name);
+    return SetUniform<GLint>(L, location, 2, LuaToInt, kGLUniformIntSetter);
+}
+
+int ProgramSetUInt(lua_State* L) {
+    GLShader* self = GetLuaProgram(L, 1);
+    const char* name = luaL_checkstring(L, 2);
+    auto location = self->GetUniformLocation(name);
+    return SetUniform<GLuint>(L, location, 2, LuaToUInt, kGLUniformUIntSetter);
+}
+
+int ProgramSetMatrix(lua_State* L) {
+    GLShader* self = GetLuaProgram(L, 1);
+    const char* name = luaL_checkstring(L, 2);
+    auto location = self->GetUniformLocation(name);
+    return SetUniformMatrix(L, location, 2);
+}
+
+} // namespace lua
 
 } // namespace glshaderkit

@@ -2,8 +2,12 @@
 
 #include <string>
 #include <filesystem>
+#include <functional>
 
 #include <glad/gl.h>
+#include <lua.hpp>
+
+#include "gl_uniform.hpp"
 
 namespace glshaderkit {
 
@@ -40,5 +44,28 @@ private:
 
     GLuint program_;
 };
+
+namespace lua {
+
+// Programのメタテーブル名
+constexpr const char* kProgramMetaName = "GLShaderKit.Program";
+
+inline GLShader* GetLuaProgram(lua_State* L, int index) {
+    return *static_cast<GLShader**>(luaL_checkudata(L, index, kProgramMetaName));
+}
+
+// Programメタテーブルの登録
+void RegisterProgram(lua_State* L);
+
+// Program作成
+int CreateProgram(lua_State* L);
+
+int ProgramUse(lua_State* L);
+int ProgramSetFloat(lua_State* L);
+int ProgramSetInt(lua_State* L);
+int ProgramSetUInt(lua_State* L);
+int ProgramSetMatrix(lua_State* L);
+
+} // namespace lua
 
 } // namespace glshaderkit

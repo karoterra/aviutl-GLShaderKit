@@ -1,0 +1,57 @@
+--[[
+    ガウシアンブラー
+    1個のシェーダーを繰り返し適用する
+
+    参考: https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+]]
+--track0:amount,0,100,0,1
+
+local GLSK = require("GLShaderKit")
+
+-- スクリプトと同じ場所に置いてあるフラグメントシェーダーを使う
+local shader_path = obj.getinfo("script_path") .. "GLShaderKit_gaussianBlur.frag"
+-- シェーダー適用回数
+local amount = math.floor(obj.track0)
+
+if GLSK.isInitialized() and amount > 0 then
+    -- コンテキスト有効化
+    GLSK.activate()
+    -- オブジェクトの画像データ取得
+    local data, w, h = obj.getpixeldata()
+    -- 画像データからテクスチャ作成
+    local tex = GLSK.createTexture(data, w, h)
+    -- フレームバッファオブジェクト作成
+    local srcFbo = GLSK.createFrameBuffer(w, h)
+    local dstFbo = GLSK.createFrameBuffer(w, h)
+    -- 頂点作成
+    local vao = GLSK.createVertex("PLANE", 1)
+    -- シェーダープログラムの作成
+    GLSK.setShader(shader_path, false)
+
+    for i = 1, amount * 2 do
+        -- ユニフォーム変数設定
+        GLSK.setFloat("resolution", w, h)
+        if i % 2 == 0 then
+            GLSK.setFloat("direction", 1, 0)
+        else
+            GLSK.setFloat("direction", 0, 1)
+        end
+        -- テクスチャ設定
+        if i == 1 then
+            tex:bind(0)
+        else
+            srcFbo:bindTexture(0)
+        end
+        -- 描画
+        vao:draw("TRIANGLES", dstFbo)
+        -- フレームバッファオブジェクトを入れ替え
+        srcFbo, dstFbo = dstFbo, srcFbo
+    end
+
+    -- 描画結果取得
+    srcFbo:readPixels(data)
+    obj.putpixeldata(data)
+
+    -- コンテキスト無効化
+    GLSK.deactivate()
+end

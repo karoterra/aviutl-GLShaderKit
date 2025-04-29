@@ -14,6 +14,7 @@
 #include "gl_shader.hpp"
 #include "gl_shader_manager.hpp"
 #include "gl_texture.hpp"
+#include "release.hpp"
 #include "config.hpp"
 #include "log.hpp"
 
@@ -40,17 +41,9 @@ public:
     }
 
     // レンダリングコンテキストを有効化する
-    bool Activate() {
-        if (!initialized_) {
-            return false;
-        }
-        return wglMakeCurrent(hdc_, hglrc_);
-    }
-
+    bool Activate();
     // レンダリングコンテキストを無効化する
-    void Deactivate() {
-        wglMakeCurrent(NULL, NULL);
-    }
+    void Deactivate();
 
     void SetPlaneVertex(int n);
     void SetPointVertex(int n);
@@ -71,6 +64,14 @@ public:
             return "";
         }
         return reinterpret_cast<const char*>(str);
+    }
+
+    ReleaseContainer& GetReleaseContainer() {
+        return releaseContainer_;
+    }
+
+    GLShaderManager& GetShaderManager() {
+        return shaderManager_;
     }
 
 private:
@@ -104,6 +105,7 @@ private:
     std::unique_ptr<GLVertex> vertex_;
     GLShaderManager shaderManager_;
     std::stack<GLTexture> textures_;
+    ReleaseContainer releaseContainer_;
 };
 
 } // namespace glshaderkit

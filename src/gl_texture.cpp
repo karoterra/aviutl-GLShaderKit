@@ -1,5 +1,8 @@
 #include "gl_texture.hpp"
 
+#include "gl_context.hpp"
+#include "lua_helper.hpp"
+
 namespace glshaderkit {
 
 GLTexture::GLTexture(const void* data, int width, int height)
@@ -56,5 +59,67 @@ void GLTexture::Release() {
         texture_ = 0;
     }
 }
+
+namespace lua {
+
+void RegisterTexture(lua_State* L) {
+    const luaL_Reg metaMethod[] = {
+        {"__gc", TextureMetaGC},
+        {nullptr, nullptr},
+    };
+    const luaL_Reg method[] = {
+        {"bind", TextureBind},
+        {"unbind", TextureUnbind},
+        {"release", TextureRelease},
+        {nullptr, nullptr},
+    };
+
+    RegisterMetaTable(L, kTextureMetaName, metaMethod, method);
+}
+
+int CreateTexture(lua_State* L) {
+    if (lua_gettop(L) < 3) {
+        return luaL_error(L, "createTexture()には引数が3個必要です");
+    }
+    void* data = lua_touserdata(L, 1);
+    int width = luaL_checkinteger(L, 2);
+    int height = luaL_checkinteger(L, 3);
+    GLTexture* tex = new GLTexture(data, width, height);
+    GLContext::Instance().GetReleaseContainer().Add(tex);
+
+    GLTexture** udata = static_cast<GLTexture**>(lua_newuserdata(L, sizeof(GLTexture*)));
+    *udata = tex;
+    luaL_getmetatable(L, kTextureMetaName);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
+int TextureMetaGC(lua_State* L) {
+    GLTexture* self = GetLuaTexture(L, 1);
+    GLContext::Instance().GetReleaseContainer().Remove(self);
+    delete self;
+    return 0;
+}
+
+int TextureBind(lua_State* L) {
+    GLTexture* self = GetLuaTexture(L, 1);
+    int unit = luaL_checkinteger(L, 2);
+    self->Bind(unit);
+    return 0;
+}
+
+int TextureUnbind(lua_State* L) {
+    GLTexture::Unbind();
+    return 0;
+}
+
+int TextureRelease(lua_State* L) {
+    GLTexture* self = GetLuaTexture(L, 1);
+    self->Release();
+    return 0;
+}
+
+} // namespace lua
+
 
 } // namespace glshaderkit

@@ -53,4 +53,28 @@ GLenum CheckDrawMode(lua_State* L, int narg) {
     return modes[index];
 }
 
+GLfloat LuaToFloat(lua_State* L, int index) {
+    return static_cast<GLfloat>(lua_tonumber(L, index));
+}
+
+GLint LuaToInt(lua_State* L, int index) {
+    return static_cast<GLint>(lua_tointeger(L, index));
+}
+
+GLuint LuaToUInt (lua_State* L, int index) {
+    return static_cast<GLuint>(lua_tointeger(L, index));
+}
+
+std::vector<float> LuaTableToVector(lua_State* L, int index) {
+    std::vector<float> result;
+    lua_pushnil(L);
+    while (lua_next(L, index) != 0) {
+        if (lua_isnumber(L, -1)) {
+            result.push_back(static_cast<float>(lua_tonumber(L, -1)));
+        }
+        lua_pop(L, 1);
+    }
+    return result;
+}
+
 } // namespace glshaderkit::lua

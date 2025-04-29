@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <glad/gl.h>
 #include <lua.hpp>
 
@@ -14,5 +16,11 @@ void RegisterMetaTable(
 );
 
 GLenum CheckDrawMode(lua_State* L, int narg);
+
+GLfloat LuaToFloat(lua_State* L, int index);
+GLint LuaToInt(lua_State* L, int index);
+GLuint LuaToUInt (lua_State* L, int index);
+
+std::vector<float> LuaTableToVector(lua_State* L, int index);
 
 } // namespace glshaderkit::lua

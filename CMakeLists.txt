@@ -33,9 +33,11 @@ add_library(GLShaderKit SHARED
     src/lua_helper.cpp
     src/gl_context.cpp
     src/gl_shader.cpp
+    src/gl_shader_manager.cpp
     src/gl_framebuffer.cpp
     src/gl_vertex.cpp
     src/gl_texture.cpp
+    src/gl_uniform.cpp
     ${GLAD_SOURCE_DIR}/gl.c
     ${GLAD_SOURCE_DIR}/wgl.c
 )
@@ -67,8 +69,9 @@ add_executable(GLShaderKit_test
     tests/test_config.cpp
     tests/test_release.cpp
     src/release.cpp
+    tests/test_cache.cpp
 )
-target_include_directories(GLShaderKit_test PUBLIC src)
+target_include_directories(GLShaderKit_test PUBLIC src tests)
 target_link_libraries(GLShaderKit_test
     PRIVATE
         GTest::gmock_main
@@ -102,6 +105,9 @@ add_custom_target(debug_deploy ALL
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_drawPoints.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effect.anm
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effectInstanced.anm
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiShader.obj
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiShader_1.frag
+        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiShader_2.frag
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.obj
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.frag
         ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.vert

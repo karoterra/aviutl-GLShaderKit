@@ -41,18 +41,9 @@ public:
     }
 
     // レンダリングコンテキストを有効化する
-    bool Activate() {
-        if (!initialized_) {
-            return false;
-        }
-        return wglMakeCurrent(hdc_, hglrc_);
-    }
-
+    bool Activate();
     // レンダリングコンテキストを無効化する
-    void Deactivate() {
-        releaseContainer_.ReleaseAll();
-        wglMakeCurrent(NULL, NULL);
-    }
+    void Deactivate();
 
     void SetPlaneVertex(int n);
     void SetPointVertex(int n);
@@ -77,6 +68,10 @@ public:
 
     ReleaseContainer& GetReleaseContainer() {
         return releaseContainer_;
+    }
+
+    GLShaderManager& GetShaderManager() {
+        return shaderManager_;
     }
 
 private:

@@ -1,0 +1,67 @@
+--[[
+    シェーダーを2個使う
+]]
+--track0:size,1,100,50,0.01
+--track1:rotate,-3600,3600,30,0.01
+--track2:shift,0,100,50,1
+
+local GLSK = require "GLShaderKit"
+
+-- スクリプトと同じ場所に置いてあるフラグメントシェーダーを使う
+local shader_path_1 = obj.getinfo("script_path") .. "GLShaderKit_multiShader_1.frag"
+local shader_path_2 = obj.getinfo("script_path") .. "GLShaderKit_multiShader_2.frag"
+
+-- 図形のサイズ
+local size = obj.track0 / 200
+-- 図形の回転角度
+local rotate = math.rad(obj.track1 % 360.0)
+-- 色ずれ量
+local shift = obj.track2
+
+-- 描画サイズ
+local width, height = 1600, 900
+
+obj.setoption("drawtarget", "tempbuffer", width, height)
+obj.load("tempbuffer")
+local data, w, h = obj.getpixeldata()
+
+if GLSK.isInitialized() then
+    -- コンテキスト有効化
+    GLSK.activate()
+
+    -- 頂点作成
+    local vao = GLSK.createVertex("PLANE", 1)
+    -- フレームバッファオブジェクト作成
+    local fbo1 = GLSK.createFrameBuffer(w, h)
+    local fbo2 = GLSK.createFrameBuffer(w, h)
+    -- シェーダープログラムの作成
+    local program1 = GLSK.createProgram(shader_path_1, false)
+    local program2 = GLSK.createProgram(shader_path_2, false)
+
+    -- シェーダー1の実行
+    program1:use()
+    program1:setFloat("resolution", w, h)
+    program1:setFloat("size", size)
+    local s = math.sin(rotate)
+    local c = math.cos(rotate)
+    program1:setMatrix("affine", "3x3", false, {
+        c, -s, 0,
+        s,  c, 0,
+        0,  0, 1
+    })
+    vao:draw("TRIANGLES", fbo1)
+
+    -- シェーダー2の実行
+    program2:use()
+    program2:setFloat("resolution", w, h)
+    program2:setFloat("shift", shift)
+    fbo1:bindTexture(0)
+    vao:draw("TRIANGLES", fbo2)
+
+    -- 描画結果取得
+    fbo2:readPixels(data)
+    obj.putpixeldata(data)
+
+    GLSK.deactivate()
+end
+

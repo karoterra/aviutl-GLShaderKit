@@ -15,3 +15,12 @@ CMakeUserPresets.json
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv

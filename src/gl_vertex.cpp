@@ -197,6 +197,11 @@ void GLVertex::Release() {
 namespace lua {
 
 void RegisterVertex(lua_State* L) {
+    const luaL_Reg staticMethod[] = {
+        {"new", VertexNew},
+        {"unbind", VertexUnbind},
+        {nullptr, nullptr},
+    };
     const luaL_Reg metaMethod[] = {
         {"__gc", VertexMetaGC},
         {nullptr, nullptr},
@@ -209,17 +214,19 @@ void RegisterVertex(lua_State* L) {
         {nullptr, nullptr},
     };
 
+    RegisterLuaClassTable(L, "Vertex", staticMethod);
     RegisterMetaTable(L, kVertexMetaName, metaMethod, method);
 }
 
-int CreateVertex(lua_State* L) {
+int VertexNew(lua_State* L) {
+    // 第1引数はクラステーブル
     const char* types[] = {"PLANE", "POINTS", nullptr};
     const GLVertex::Primitive primitives[] = {
         GLVertex::Primitive::Plane,
         GLVertex::Primitive::Points,
     };
-    auto primitive = primitives[luaL_checkoption(L, 1, "PLANE", types)];
-    int n = luaL_checkinteger(L, 2);
+    auto primitive = primitives[luaL_checkoption(L, 2, "PLANE", types)];
+    int n = luaL_checkinteger(L, 3);
     GLVertex* vao = new GLVertex(primitive, n);
     GLContext::Instance().GetReleaseContainer().Add(vao);
 

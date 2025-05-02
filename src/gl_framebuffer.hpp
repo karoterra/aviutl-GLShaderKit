@@ -73,7 +73,7 @@ inline GLFramebuffer* GetLuaFrameBuffer(lua_State* L, int index) {
 void RegisterFrameBuffer(lua_State* L);
 
 // FrameBuffer作成
-int CreateFrameBuffer(lua_State* L);
+int FrameBufferNew(lua_State* L);
 
 // ガベージコレクションメタメソッド
 int FrameBufferMetaGC(lua_State* L);

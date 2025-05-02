@@ -174,10 +174,6 @@ static const luaL_Reg kLibFunctions[] = {
     {"setUInt", setUInt},
     {"setMatrix", setMatrix},
     {"setTexture2D", setTexture2D},
-    {"createTexture", glshaderkit::lua::CreateTexture},
-    {"createFrameBuffer", glshaderkit::lua::CreateFrameBuffer},
-    {"createVertex", glshaderkit::lua::CreateVertex},
-    {"createProgram", glshaderkit::lua::CreateProgram},
     {nullptr, nullptr},
 };
 
@@ -209,12 +205,6 @@ GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
         context.Release();
     }
 
-    // クラスのメタテーブル登録
-    glshaderkit::lua::RegisterTexture(L);
-    glshaderkit::lua::RegisterFrameBuffer(L);
-    glshaderkit::lua::RegisterVertex(L);
-    glshaderkit::lua::RegisterProgram(L);
-
     // Luaステートが閉じるときにGLコンテキストを解放させる
     void* ud = lua_newuserdata(L, 1);
     if (!ud) {
@@ -228,6 +218,12 @@ GL_SHADER_KIT_API int luaopen_GLShaderKit(lua_State* L) {
 
     // モジュールメソッド登録
     luaL_register(L, "GLShaderKit", kLibFunctions);
+
+    // クラス登録
+    glshaderkit::lua::RegisterTexture(L);
+    glshaderkit::lua::RegisterFrameBuffer(L);
+    glshaderkit::lua::RegisterVertex(L);
+    glshaderkit::lua::RegisterProgram(L);
 
     return 1;
 }

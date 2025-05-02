@@ -63,6 +63,11 @@ void GLTexture::Release() {
 namespace lua {
 
 void RegisterTexture(lua_State* L) {
+    const luaL_Reg staticMethod[] = {
+        {"new", TextureNew},
+        {"unbind", TextureUnbind},
+        {nullptr, nullptr},
+    };
     const luaL_Reg metaMethod[] = {
         {"__gc", TextureMetaGC},
         {nullptr, nullptr},
@@ -74,16 +79,15 @@ void RegisterTexture(lua_State* L) {
         {nullptr, nullptr},
     };
 
+    RegisterLuaClassTable(L, "Texture", staticMethod);
     RegisterMetaTable(L, kTextureMetaName, metaMethod, method);
 }
 
-int CreateTexture(lua_State* L) {
-    if (lua_gettop(L) < 3) {
-        return luaL_error(L, "createTexture()には引数が3個必要です");
-    }
-    void* data = lua_touserdata(L, 1);
-    int width = luaL_checkinteger(L, 2);
-    int height = luaL_checkinteger(L, 3);
+int TextureNew(lua_State* L) {
+    // 第1引数はクラステーブル
+    void* data = lua_touserdata(L, 2);
+    int width = luaL_checkinteger(L, 3);
+    int height = luaL_checkinteger(L, 4);
     GLTexture* tex = new GLTexture(data, width, height);
     GLContext::Instance().GetReleaseContainer().Add(tex);
 

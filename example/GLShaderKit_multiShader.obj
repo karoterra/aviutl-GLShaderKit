@@ -30,13 +30,13 @@ if GLSK.isInitialized() then
     GLSK.activate()
 
     -- 頂点作成
-    local vao = GLSK.createVertex("PLANE", 1)
+    local vao = GLSK.Vertex:new("PLANE", 1)
     -- フレームバッファオブジェクト作成
-    local fbo1 = GLSK.createFrameBuffer(w, h)
-    local fbo2 = GLSK.createFrameBuffer(w, h)
+    local fbo1 = GLSK.FrameBuffer:new(w, h)
+    local fbo2 = GLSK.FrameBuffer:new(w, h)
     -- シェーダープログラムの作成
-    local program1 = GLSK.createProgram(shader_path_1, false)
-    local program2 = GLSK.createProgram(shader_path_2, false)
+    local program1 = GLSK.Program:new(shader_path_1, false)
+    local program2 = GLSK.Program:new(shader_path_2, false)
 
     -- シェーダー1の実行
     program1:use()

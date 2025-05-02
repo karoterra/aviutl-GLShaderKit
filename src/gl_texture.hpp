@@ -53,7 +53,7 @@ inline GLTexture* GetLuaTexture(lua_State* L, int index) {
 void RegisterTexture(lua_State* L);
 
 // Texture作成
-int CreateTexture(lua_State* L);
+int TextureNew(lua_State* L);
 
 // ガベージコレクションメタメソッド
 int TextureMetaGC(lua_State* L);

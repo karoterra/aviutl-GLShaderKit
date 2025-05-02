@@ -58,7 +58,7 @@ inline GLShader* GetLuaProgram(lua_State* L, int index) {
 void RegisterProgram(lua_State* L);
 
 // Program作成
-int CreateProgram(lua_State* L);
+int ProgramNew(lua_State* L);
 
 int ProgramUse(lua_State* L);
 int ProgramSetFloat(lua_State* L);

@@ -141,6 +141,10 @@ void GLShader::Release() {
 namespace lua {
 
 void RegisterProgram(lua_State* L) {
+    const luaL_Reg staticMethod[] = {
+        {"new", ProgramNew},
+        {nullptr, nullptr},
+    };
     const luaL_Reg metaMethod[] = {
         {nullptr, nullptr},
     };
@@ -153,12 +157,14 @@ void RegisterProgram(lua_State* L) {
         {nullptr, nullptr},
     };
 
+    RegisterLuaClassTable(L, "Program", staticMethod);
     RegisterMetaTable(L, kProgramMetaName, metaMethod, method);
 }
 
-int CreateProgram(lua_State* L) {
-    const char* path = luaL_checkstring(L, 1);
-    const bool force = lua_toboolean(L, 2);
+int ProgramNew(lua_State* L) {
+    // 第1引数はクラステーブル
+    const char* path = luaL_checkstring(L, 2);
+    const bool force = lua_toboolean(L, 3);
     auto shader = GLContext::Instance().GetShaderManager().CreateProgram(path, force);
 
     GLShader** udata = static_cast<GLShader**>(lua_newuserdata(L, sizeof(GLShader*)));

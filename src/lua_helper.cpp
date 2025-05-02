@@ -2,6 +2,12 @@
 
 namespace glshaderkit::lua {
 
+void RegisterLuaClassTable(lua_State* L, const char* name, const luaL_Reg* staticMethod) {
+    lua_newtable(L);
+    luaL_register(L, nullptr, staticMethod);
+    lua_setfield(L, -2, name);
+}
+
 void RegisterMetaTable(
     lua_State* L,
     const char* name,

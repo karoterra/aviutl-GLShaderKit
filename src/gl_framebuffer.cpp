@@ -78,6 +78,11 @@ void GLFramebuffer::Release() {
 namespace lua {
 
 void RegisterFrameBuffer(lua_State* L) {
+    const luaL_Reg staticMethod[] = {
+        {"new", FrameBufferNew},
+        {"unbind", FrameBufferUnbind},
+        {nullptr, nullptr},
+    };
     const luaL_Reg metaMethod[] = {
         {"__gc", FrameBufferMetaGC},
         {nullptr, nullptr},
@@ -91,12 +96,14 @@ void RegisterFrameBuffer(lua_State* L) {
         {nullptr, nullptr},
     };
 
+    RegisterLuaClassTable(L, "FrameBuffer", staticMethod);
     RegisterMetaTable(L, kFrameBufferMetaName, metaMethod, method);
 }
 
-int CreateFrameBuffer(lua_State* L) {
-    int width = luaL_checkinteger(L, 1);
-    int height = luaL_checkinteger(L, 2);
+int FrameBufferNew(lua_State* L) {
+    // 第1引数はクラステーブル
+    int width = luaL_checkinteger(L, 2);
+    int height = luaL_checkinteger(L, 3);
     GLFramebuffer* fbo = new GLFramebuffer(width, height);
     GLContext::Instance().GetReleaseContainer().Add(fbo);
 

@@ -7,6 +7,9 @@
 
 namespace glshaderkit::lua {
 
+// スタックトップのテーブルにLuaに新しいクラステーブルを登録する
+void RegisterLuaClassTable(lua_State* L, const char* name, const luaL_Reg* staticMethod);
+
 // Luaに新しいメタテーブルを登録する
 void RegisterMetaTable(
     lua_State* L,

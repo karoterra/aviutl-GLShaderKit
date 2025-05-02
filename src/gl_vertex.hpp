@@ -77,7 +77,7 @@ inline GLVertex* GetLuaVertex(lua_State* L, int index) {
 void RegisterVertex(lua_State* L);
 
 // Vertex作成
-int CreateVertex(lua_State* L);
+int VertexNew(lua_State* L);
 
 // ガベージコレクションメタメソッド
 int VertexMetaGC(lua_State* L);

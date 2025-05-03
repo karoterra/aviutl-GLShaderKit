@@ -1,0 +1,83 @@
+module: GLShaderKit
+
+classes:
+  - name: Vertex
+    description: |-
+      頂点配列を表すクラス。
+
+      deactivate時にリソースは自動で破棄される。
+
+    staticMethods:
+      - name: new
+        description: |-
+          頂点配列を作成する。
+
+          `primitive` に `PLANE` を指定したときは板ポリゴンを表す頂点配列を作成する。
+          板ポリゴンは横に `n` 分割、縦に `n` 分割される。
+          $(n + 1) ^ 2$ 個の 頂点が作成される。
+
+          | location | 型   | 頂点属性                |
+          | -------: | ---- | ----------------------- |
+          |        0 | vec3 | 頂点座標 $[-1, 1]$      |
+          |        1 | vec2 | テクスチャ座標 $[0, 1]$ |
+
+          `primitive` に `POINTS` を指定したときは `n` 個の点群表す頂点配列を作成する。
+
+          | location | 型    | 頂点属性                        |
+          | -------: | ----- | ------------------------------- |
+          |        0 | float | 頂点番号 $(0, 1, \cdots, n-1 )$ |
+        params:
+          - name: primitive
+            type: string
+            description: 頂点のプリミティブ
+            enum:
+              - value: PLANE
+                description: 板ポリゴン
+              - value: POINTS
+                description: 点群
+          - name: n
+            type: integer
+        returns:
+          - type: Vertex
+            description: Vertexインスタンス
+
+      - name: unbind
+        description: 頂点配列をアンバインドする。
+
+    methods:
+      - name: bind
+        description: 頂点配列をバインドする。
+
+      - name: unbind
+        description: フレームバッファをアンバインドする。
+
+      - name: draw
+        description: |-
+          描画を実行する。
+        params:
+          - name: mode
+            type: string
+            description: 描画するプリミティブ
+            enum:
+              - value: POINTS
+              - value: LINE_STRIP
+              - value: LINE_LOOP
+              - value: LINES
+              - value: LINE_STRIP_ADJACENCY
+              - value: LINES_ADJACENCY
+              - value: TRIANGLE_STRIP
+              - value: TRIANGLE_FAN
+              - value: TRIANGLES
+              - value: TRIANGLE_STRIP_ADJACENCY
+              - value: TRIANGLES_ADJACENCY
+              - value: PATCHES
+          - name: fbo
+            type: FrameBuffer
+            description: 描画先の `FrameBuffer` インスタンス
+          - name: instanceCount
+            type: integer
+            description: 描画インスタンス数。1以上の整数を指定する。省略した場合は 1 。
+            optional: true
+
+      - name: release
+        description: リソースを解放する。

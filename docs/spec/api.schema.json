@@ -1,0 +1,198 @@
+{
+    "$defs": {
+        "Class": {
+            "properties": {
+                "name": {
+                    "description": "クラス名",
+                    "title": "Name",
+                    "type": "string"
+                },
+                "description": {
+                    "default": "",
+                    "description": "クラスの説明",
+                    "title": "Description",
+                    "type": "string"
+                },
+                "staticMethods": {
+                    "default": [],
+                    "description": "静的メソッド",
+                    "items": {
+                        "$ref": "#/$defs/Function"
+                    },
+                    "title": "Staticmethods",
+                    "type": "array"
+                },
+                "methods": {
+                    "default": [],
+                    "description": "インスタンスメソッド",
+                    "items": {
+                        "$ref": "#/$defs/Function"
+                    },
+                    "title": "Methods",
+                    "type": "array"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "title": "Class",
+            "type": "object"
+        },
+        "Function": {
+            "properties": {
+                "name": {
+                    "description": "関数名",
+                    "title": "Name",
+                    "type": "string"
+                },
+                "description": {
+                    "default": "",
+                    "description": "関数の説明",
+                    "title": "Description",
+                    "type": "string"
+                },
+                "params": {
+                    "default": [],
+                    "description": "関数の引数",
+                    "items": {
+                        "$ref": "#/$defs/FunctionParam"
+                    },
+                    "title": "Params",
+                    "type": "array"
+                },
+                "returns": {
+                    "default": [],
+                    "description": "関数の戻り値",
+                    "items": {
+                        "$ref": "#/$defs/FunctionReturn"
+                    },
+                    "title": "Returns",
+                    "type": "array"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "title": "Function",
+            "type": "object"
+        },
+        "FunctionParam": {
+            "properties": {
+                "name": {
+                    "description": "引数名",
+                    "title": "Name",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "引数の型",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "description": {
+                    "default": "",
+                    "description": "引数の説明",
+                    "title": "Description",
+                    "type": "string"
+                },
+                "optional": {
+                    "default": false,
+                    "description": "引数を省略可能 (nilを受け付ける) 場合はtrueにする",
+                    "title": "Optional",
+                    "type": "boolean"
+                },
+                "enum": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/ParamEnum"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "引数として受け付ける値の列挙",
+                    "title": "Enum"
+                }
+            },
+            "required": [
+                "name",
+                "type"
+            ],
+            "title": "FunctionParam",
+            "type": "object"
+        },
+        "FunctionReturn": {
+            "properties": {
+                "type": {
+                    "description": "戻り値の型",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "description": {
+                    "default": "",
+                    "description": "戻り値の説明",
+                    "title": "Description",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "FunctionReturn",
+            "type": "object"
+        },
+        "ParamEnum": {
+            "properties": {
+                "value": {
+                    "description": "列挙値",
+                    "title": "Value",
+                    "type": "string"
+                },
+                "description": {
+                    "default": "",
+                    "description": "列挙値の説明",
+                    "title": "Description",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "title": "ParamEnum",
+            "type": "object"
+        }
+    },
+    "properties": {
+        "module": {
+            "description": "モジュール名",
+            "title": "Module",
+            "type": "string"
+        },
+        "functions": {
+            "default": [],
+            "description": "モジュールメソッド",
+            "items": {
+                "$ref": "#/$defs/Function"
+            },
+            "title": "Functions",
+            "type": "array"
+        },
+        "classes": {
+            "default": [],
+            "description": "モジュール提供クラス",
+            "items": {
+                "$ref": "#/$defs/Class"
+            },
+            "title": "Classes",
+            "type": "array"
+        }
+    },
+    "required": [
+        "module"
+    ],
+    "title": "Module",
+    "type": "object"
+}

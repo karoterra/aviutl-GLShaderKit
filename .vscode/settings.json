@@ -18,5 +18,10 @@
     "Lua.runtime.version": "Lua 5.1",
     "Lua.workspace.library": [
         "vendor/lua_aviutl_definitions/aviutl.lua"
-    ]
+    ],
+    "yaml.schemas": {
+        "docs/spec/api.schema.json" : [
+            "docs/spec/*.yaml"
+        ]
+    }
 }

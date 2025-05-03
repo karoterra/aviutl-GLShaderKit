@@ -1,0 +1,49 @@
+module: GLShaderKit
+
+classes:
+  - name: FrameBuffer
+    description: |-
+      フレームバッファを表すクラス。
+
+      deactivate時にリソースは自動で破棄される。
+
+    staticMethods:
+      - name: new
+        description: フレームバッファを作成する。
+        params:
+          - name: width
+            type: integer
+            description: フレームバッファの幅
+          - name: height
+            type: integer
+            description: フレームバッファの高さ
+        returns:
+          - type: FrameBuffer
+            description: フレームバッファインスタンス
+
+      - name: unbind
+        description: フレームバッファをアンバインドする。
+
+    methods:
+      - name: bind
+        description: フレームバッファをバインドする。
+
+      - name: unbind
+        description: フレームバッファをアンバインドする。
+
+      - name: bindTexture
+        description: フレームバッファのカラーバッファをテクスチャとしてバインドする。
+        params:
+          - name: unit
+            type: integer
+            description: テクスチャのユニット番号
+
+      - name: readPixels
+        description: フレームバッファのカラーバッファの画像データを取得する。
+        params:
+          - name: data
+            type: lightuserdata
+            description: BGRA配列へのポインタ
+
+      - name: release
+        description: リソースを解放する。

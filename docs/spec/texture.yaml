@@ -1,0 +1,42 @@
+module: GLShaderKit
+
+classes:
+  - name: Texture
+    description: |-
+      テクスチャを表すクラス。
+
+      deactivate時にリソースは自動で破棄される。
+
+    staticMethods:
+      - name: new
+        description: テクスチャを作成する。
+        params:
+          - name: data
+            type: lightuserdata
+            description: テクスチャのBGRA配列へのポインタ
+          - name: width
+            type: integer
+            description: テクスチャの幅
+          - name: height
+            type: integer
+            description: テクスチャの高さ
+        returns:
+          - type: Texture
+            description: Textureインスタンス
+
+      - name: unbind
+        description: テクスチャをアンバインドする。
+
+    methods:
+      - name: bind
+        description: テクスチャをバインドする。
+        params:
+          - name: unit
+            type: integer
+            description: テクスチャのユニット番号
+
+      - name: unbind
+        description: テクスチャをアンバインドする。
+
+      - name: release
+        description: リソースを解放する。

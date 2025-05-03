@@ -1,0 +1,10 @@
+[project]
+name = "aviutl-glshaderkit"
+version = "0.1.0"
+description = "Development tools for GLShaderKit"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic>=2.11.4",
+    "pyyaml>=6.0.2",
+]

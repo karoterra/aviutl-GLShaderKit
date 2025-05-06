@@ -100,25 +100,25 @@ add_custom_target(debug_deploy ALL
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:GLShaderKit>
         ${PROJECT_SOURCE_DIR}/src/GLShaderKit.ini
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_info.obj
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_draw.obj
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_drawPoints.obj
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effect.anm
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_effectInstanced.anm
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiShader.obj
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiShader_1.frag
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiShader_2.frag
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.obj
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.frag
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture.vert
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img0.png
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img1.png
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_multiTexture_img2.png
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.obj
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.frag
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_uniform.vert
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_gaussianBlur.anm
-        ${PROJECT_SOURCE_DIR}/example/GLShaderKit_gaussianBlur.frag
+        ${PROJECT_SOURCE_DIR}/example/info/GLShaderKit_info.obj
+        ${PROJECT_SOURCE_DIR}/example/draw/GLShaderKit_draw.obj
+        ${PROJECT_SOURCE_DIR}/example/drawPoints/GLShaderKit_drawPoints.obj
+        ${PROJECT_SOURCE_DIR}/example/effect/GLShaderKit_effect.anm
+        ${PROJECT_SOURCE_DIR}/example/effectInstanced/GLShaderKit_effectInstanced.anm
+        ${PROJECT_SOURCE_DIR}/example/multiShader/GLShaderKit_multiShader.obj
+        ${PROJECT_SOURCE_DIR}/example/multiShader/GLShaderKit_multiShader_1.frag
+        ${PROJECT_SOURCE_DIR}/example/multiShader/GLShaderKit_multiShader_2.frag
+        ${PROJECT_SOURCE_DIR}/example/multiTexture/GLShaderKit_multiTexture.obj
+        ${PROJECT_SOURCE_DIR}/example/multiTexture/GLShaderKit_multiTexture.frag
+        ${PROJECT_SOURCE_DIR}/example/multiTexture/GLShaderKit_multiTexture.vert
+        ${PROJECT_SOURCE_DIR}/example/multiTexture/GLShaderKit_multiTexture_img0.png
+        ${PROJECT_SOURCE_DIR}/example/multiTexture/GLShaderKit_multiTexture_img1.png
+        ${PROJECT_SOURCE_DIR}/example/multiTexture/GLShaderKit_multiTexture_img2.png
+        ${PROJECT_SOURCE_DIR}/example/uniform/GLShaderKit_uniform.obj
+        ${PROJECT_SOURCE_DIR}/example/uniform/GLShaderKit_uniform.frag
+        ${PROJECT_SOURCE_DIR}/example/uniform/GLShaderKit_uniform.vert
+        ${PROJECT_SOURCE_DIR}/example/gaussianBlur/GLShaderKit_gaussianBlur.anm
+        ${PROJECT_SOURCE_DIR}/example/gaussianBlur/GLShaderKit_gaussianBlur.frag
         ${AVIUTL_DIR}/script/GLShaderKit
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     DEPENDS GLShaderKit

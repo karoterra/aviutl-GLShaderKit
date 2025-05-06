@@ -4,7 +4,7 @@
 
 local GLShaderKit = require "GLShaderKit"
 
-local shader_path = obj.getinfo("script_path") .. "multi-texture.frag"
+local shader_path = obj.getinfo("script_path") .. "GLShaderKit_multiTexture.frag"
 
 if GLShaderKit.isInitialized() then
     GLShaderKit.activate()

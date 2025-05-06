@@ -48,6 +48,9 @@ GLShaderKit を使用したスクリプト・シェーダーのサンプルは [
 
 GLShaderKitのリファレンスは[こちら](/docs/api/README.md)を参照してください。
 
+`GLShaderKit_def.lua` は [Lua Language Server](https://github.com/luals/lua-language-server) 用の定義ファイルです。
+VSCode 等でスクリプトを書く際にご活用ください。
+
 ## ソースコードのビルド
 
 `vendor/lua` の中に `lua5_1_4_Win32_dll8_lib` の中身を全てコピーしてください。
@@ -112,6 +115,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ```
 
 ## 更新履歴
+
+### v0.5.0 (2025-05-06)
+- ユーザーデータの導入 (Texture, FrameBuffer, Vertex, Program) ([#15](https://github.com/karoterra/aviutl-GLShaderKit/pull/15), [#16](https://github.com/karoterra/aviutl-GLShaderKit/pull/16))
+- リファレンスの更新とLuaLS用定義ファイル追加 ([#17](https://github.com/karoterra/aviutl-GLShaderKit/pull/17))
 
 ### v0.4.0 (2024-09-16)
 - `setUInt`, `setMatrix` の追加 ([#13](https://github.com/karoterra/aviutl-GLShaderKit/pull/13))
